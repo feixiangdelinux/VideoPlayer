@@ -1,66 +1,67 @@
 package com.ccg.videoplayer.view
 
-import android.os.Bundle
-import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
-import com.ccg.videoplayer.GitHubService
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import com.ccg.libbase.BaseActivityB
 import com.ccg.videoplayer.R
-import com.ccg.videoplayer.entity.VideoBean
+import com.ccg.videoplayer.adapter.MainAdapter
+import com.ccg.videoplayer.databinding.ActivityMainBinding
 import com.ccg.videoplayer.util.NavigationUtils
+import com.ccg.videoplayer.viewmodel.MainViewModel
 import com.google.gson.GsonBuilder
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
-import java.util.*
 
-class MainActivity : AppCompatActivity() {
-    private val compositeDisposable by lazy { CompositeDisposable() }
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://siyou.nos-eastchina1.126.net/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .build()
-    private val context = this
-    var userList: MutableList<VideoBean> = ArrayList()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        findViewById<Button>(R.id.main_tv_click).setOnClickListener {
-            NavigationUtils.goSelectSubjectActivity()
-            val random = Random()
-            val num = random.nextInt(userList.size + 1)
-            val dat=userList[num]
-            dat.vUrl="https://d1.xia12345.com/d/62/2018/06/VwsLD2jY.mp4"
-            val ssss = GsonBuilder().create().toJson(dat)
-            Timber.e(ssss)
-            NavigationUtils.goSelectSubjectActivity(ssss)
-        }
-        /**
-         * 联网请求网络并随机跳转到播放页面
-         */
+/**
+ * @author : C4_雍和
+ * 描述 :主页面
+ * 主要功能 :
+ * 维护人员 : C4_雍和
+ * date : 20-3-27 下午3:27
+ */
+class MainActivity : BaseActivityB<MainViewModel>() {
+    override fun providerVMClass(): Class<MainViewModel>? =
+        MainViewModel::class.java
 
-        val service = retrofit.create(GitHubService::class.java)
-        addDisposable(
-            service.getTemp()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    userList.clear()
-                    userList.addAll(it)
-                }, {})
+    private lateinit var binding: ActivityMainBinding
+    private var adapter = MainAdapter()
+
+    override fun initView() {
+        binding = DataBindingUtil.setContentView<ActivityMainBinding>(
+            this,
+            R.layout.activity_main
         )
     }
 
-    /**
-     * 添加订阅
-     * @param disposable Disposable
-     */
-    fun addDisposable(disposable: Disposable) {
-        compositeDisposable.add(disposable)
+    override fun initData() {
+        binding.recyclerView.adapter = adapter
+        getData()
+    }
+
+    override fun setListener() {
+        //房间列表的点击事件
+        adapter.setOnItemClickListener { _, _, position ->
+            viewModel.uiData.value?.run {
+                val clickData = data[position]
+                val json = GsonBuilder().create().toJson(clickData)
+                NavigationUtils.goVideoListActivity(json)
+            }
+        }
+    }
+
+    override fun startObserve() {
+        super.startObserve()
+        viewModel.apply {
+            uiData.observe(this@MainActivity, Observer {
+                adapter.setNewData(it.data)
+            })
+            errMsg.observe(this@MainActivity, Observer {
+                Timber.e("加载失败$it")
+            })
+        }
+    }
+
+    override fun getData() {
+        super.getData()
+        viewModel.initData()
     }
 }

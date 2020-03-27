@@ -1,5 +1,6 @@
 rootProject.name='Video Player'
 include ':app'
-include ':ib_base'
+include ':lib_base'
 include ':lib_common'
 include ':moduleone'
+include ':moduletwo'

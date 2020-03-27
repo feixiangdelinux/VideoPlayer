@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.blankj.utilcode.util.AppUtils
 import com.ccg.videoplayer.BuildConfig
-import com.ccg.videoplayer.GitHubService
+import com.ccg.videoplayer.repository.GitHubService
 import com.ccg.videoplayer.R
 import com.ccg.videoplayer.util.writeFilePath
 import io.reactivex.android.schedulers.AndroidSchedulers

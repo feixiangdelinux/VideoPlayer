@@ -11,14 +11,28 @@ import com.billy.cc.core.component.CC
  */
 object NavigationUtils {
     /**
-     * 去往欢迎界面
+     * 去往视频播放界面
+     * @param json String
      */
-    fun goSelectSubjectActivity(json: String = "") {
+    fun goVideoPlayActivity(json: String = "") {
         CC.obtainBuilder("ComponentOne")
             .setActionName("VideoPlayActivity")
             .addParam("json",json)
             .build()
             .call()
-
     }
+
+    /**
+     * 去往视频列表界面
+     * @param json String
+     */
+    fun goVideoListActivity(json: String = "") {
+        CC.obtainBuilder("ComponentTwo")
+            .setActionName("VideoListActivity")
+            .addParam("json",json)
+            .build()
+            .call()
+    }
+
+
 }
