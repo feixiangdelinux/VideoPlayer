@@ -1,7 +1,7 @@
 apply from: rootProject.file('cc-settings-2.gradle')
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-
+apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -28,6 +28,9 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
+    dataBinding {
+        enabled true
+    }
 }
 
 dependencies {
@@ -39,4 +42,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+
 }

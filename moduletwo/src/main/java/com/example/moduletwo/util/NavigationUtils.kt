@@ -1,4 +1,4 @@
-package com.ccg.videoplayer.util
+package com.example.moduletwo.util
 
 import com.billy.cc.core.component.CC
 
@@ -7,22 +7,18 @@ import com.billy.cc.core.component.CC
  * 描述 :
  * 主要功能 :
  * 维护人员 : C4_雍和
- * date : 20-3-20 下午11:25
+ * date : 20-4-5 下午6:05
  */
 object NavigationUtils {
-
-
     /**
-     * 去往视频列表界面
+     * 去往视频播放界面
      * @param json String
      */
-    fun goVideoListActivity(json: String = "") {
-        CC.obtainBuilder("ComponentTwo")
-            .setActionName("VideoListActivity")
+    fun goVideoPlayActivity(json: String = "") {
+        CC.obtainBuilder("ComponentOne")
+            .setActionName("VideoPlayActivity")
             .addParam("json",json)
             .build()
             .call()
     }
-
-
 }

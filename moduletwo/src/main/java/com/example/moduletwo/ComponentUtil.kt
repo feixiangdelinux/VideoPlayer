@@ -4,6 +4,7 @@ import com.billy.cc.core.component.CC
 import com.billy.cc.core.component.CCResult
 import com.billy.cc.core.component.CCUtil
 import com.billy.cc.core.component.IComponent
+import com.example.moduletwo.view.VideoListActivity
 
 /**
  * @author : C4_雍和
