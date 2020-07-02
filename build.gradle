@@ -5,10 +5,12 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
+
+        maven {url"https://jitpack.io"}
+
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.2'
+        classpath 'com.android.tools.build:gradle:4.0.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.billy.android:cc-register:1.1.2'
         // NOTE: Do not place your application dependencies here; they belong

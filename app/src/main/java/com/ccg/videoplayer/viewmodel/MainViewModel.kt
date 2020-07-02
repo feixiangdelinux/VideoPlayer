@@ -2,11 +2,8 @@ package com.ccg.videoplayer.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import com.ccg.libbase.BaseViewModelB
-import com.ccg.videoplayer.entity.RoomBean
+import com.ccg.videoplayer.entity.AbaseBean
 import com.ccg.videoplayer.repository.NetRepository
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 
 /**
  * @author : C4_雍和
@@ -17,18 +14,16 @@ import timber.log.Timber
  */
 class MainViewModel : BaseViewModelB() {
     private val repository by lazy { NetRepository() }
-    var uiData: MutableLiveData<RoomBean> = MutableLiveData()
+    var uiData: MutableLiveData<MutableList<AbaseBean>> = MutableLiveData()
     val errMsg: MutableLiveData<String> = MutableLiveData()
     fun initData() {
-        addDisposable(
-            repository.getListData()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    uiData.postValue(it)
-                }, {
-                    Timber.e("获取房间列表失败:  ${it.message}")
-                })
-        )
+
+        val datas: MutableList<AbaseBean> = ArrayList()
+        val tempDataOne = AbaseBean()
+        tempDataOne.tag = 1
+        tempDataOne.name = "小黄人播放器"
+        datas.add(tempDataOne)
+        uiData.postValue(datas)
+
     }
 }

@@ -16,9 +16,9 @@ object NavigationUtils {
      * 去往视频列表界面
      * @param json String
      */
-    fun goVideoListActivity(json: String = "") {
+    fun goRoomListActivity(json: String = "") {
         CC.obtainBuilder("ComponentTwo")
-            .setActionName("VideoListActivity")
+            .setActionName("RoomListActivity")
             .addParam("json",json)
             .build()
             .call()
