@@ -27,7 +27,8 @@ class VideoPlayActivity : Activity() {
 
         videoPlayer = findViewById<StandardGSYVideoPlayer>(R.id.detail_player)
 
-        videoPlayer.setUp(sssss.vUrl, true, "测试视频")
+//        videoPlayer.setUp(sssss.vUrl, true, "测试视频")
+        videoPlayer.setUp("https://2.ddyunbo.com/20200607/zQHRlkLH/index.m3u8", true, "测试视频")
         //增加title
         videoPlayer.titleTextView.visibility = View.VISIBLE;
         //设置返回键
