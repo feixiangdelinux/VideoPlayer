@@ -41,9 +41,16 @@ class MainActivity : BaseActivityB<MainViewModel>() {
         //房间列表的点击事件
         adapter.setOnItemClickListener { _, _, position ->
             viewModel.uiData.value?.run {
-                val clickData = data[position]
-                val json = GsonBuilder().create().toJson(clickData)
-                NavigationUtils.goVideoListActivity(json)
+                val clickData = this[position]
+                when (clickData.tag) {
+                    1 -> {
+                        NavigationUtils.goRoomListActivity()
+                    }
+                    2 -> {
+                    }
+                    else -> {
+                    }
+                }
             }
         }
     }
@@ -52,7 +59,7 @@ class MainActivity : BaseActivityB<MainViewModel>() {
         super.startObserve()
         viewModel.apply {
             uiData.observe(this@MainActivity, Observer {
-                adapter.setNewData(it.data)
+                adapter.setNewData(it)
             })
             errMsg.observe(this@MainActivity, Observer {
                 Timber.e("加载失败$it")

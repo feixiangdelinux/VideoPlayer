@@ -30,5 +30,12 @@ class NetRepository {
         return netService.getListData(url)
             .subscribeOn(Schedulers.io())
     }
-
+    /**
+     * 获取房间信息
+     * @return Observable<RoomBean>
+     */
+    fun getRoomListData(): Observable<RoomBean> {
+        return netService.getRoomListData()
+            .subscribeOn(Schedulers.io())
+    }
 }

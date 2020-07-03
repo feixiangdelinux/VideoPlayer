@@ -1,8 +1,5 @@
 package com.ccg.videoplayer.repository
 
-import com.ccg.videoplayer.entity.RoomBean
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -20,14 +17,4 @@ class NetRepository {
         .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build().create(GitHubService::class.java)
-
-    /**
-     * 获取房间信息
-     * @return Observable<RoomBean>
-     */
-    fun getListData(): Observable<RoomBean> {
-        return netService.getListData()
-            .subscribeOn(Schedulers.io())
-    }
-
 }

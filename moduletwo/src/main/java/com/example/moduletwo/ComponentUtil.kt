@@ -4,7 +4,7 @@ import com.billy.cc.core.component.CC
 import com.billy.cc.core.component.CCResult
 import com.billy.cc.core.component.CCUtil
 import com.billy.cc.core.component.IComponent
-import com.example.moduletwo.view.VideoListActivity
+import com.example.moduletwo.view.RoomListActivity
 
 /**
  * @author : C4_雍和
@@ -21,8 +21,8 @@ class ComponentUtil : IComponent {
 
     override fun onCall(cc: CC): Boolean {
         return when (cc.actionName) {
-            "VideoListActivity" -> {
-                CCUtil.navigateTo(cc, VideoListActivity::class.java)
+            "RoomListActivity" -> {
+                CCUtil.navigateTo(cc, RoomListActivity::class.java)
                 //返回处理结果给调用方
                 CC.sendCCResult(cc.callId, CCResult.success())
                 //同步方式实现（在return之前听过CC.sendCCResult()返回组件调用结果），return false
