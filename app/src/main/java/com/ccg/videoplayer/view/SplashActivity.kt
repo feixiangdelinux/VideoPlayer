@@ -6,13 +6,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.view.View
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.blankj.utilcode.util.AppUtils
 import com.ccg.videoplayer.BuildConfig
-import com.ccg.videoplayer.repository.GitHubService
 import com.ccg.videoplayer.R
-import com.ccg.videoplayer.util.writeFilePath
+import com.ccg.videoplayer.repository.GitHubService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -43,9 +44,11 @@ class SplashActivity : AppCompatActivity() {
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build()
     private val context = this
+    private lateinit var mProgressBar: ProgressBar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+        mProgressBar = findViewById<ProgressBar>(R.id.splash_pb_loading)
         checkVersion()
     }
 
@@ -68,6 +71,7 @@ class SplashActivity : AppCompatActivity() {
                             .setTitle("更新通知")
                             .setMessage(it.data.desc)
                             .setPositiveButton("立即更新") { _, _ ->
+                                mProgressBar.visibility = View.VISIBLE
                                 downloadApp(it.data.apkUrl)
                             }
                             .create().show()
@@ -94,7 +98,6 @@ class SplashActivity : AppCompatActivity() {
                         if (!paths.endsWith("/")) {
                             paths = "$paths/"
                         }
-                        this.writeFilePath(paths, "xiaohuangren.apk")
                         try {
                             //判断文件夹是否存在
                             val files = File(paths)
@@ -133,6 +136,7 @@ class SplashActivity : AppCompatActivity() {
                             } finally {
                                 inputStream?.close()
                                 outputStream?.close()
+                                mProgressBar.visibility = View.GONE
                                 updateApp(paths + "xiaohuangren.apk")
                             }
                         } catch (e: IOException) {
