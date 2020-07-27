@@ -8,24 +8,33 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:orientation="vertical">
 
         <ImageView
-            android:layout_gravity="center_horizontal"
             android:layout_weight="1"
             android:id="@+id/video_list_iv_ic"
-            android:layout_width="match_parent"
-            android:layout_height="0dp" />
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp" />
 
         <TextView
-            android:layout_gravity="center_horizontal"
             android:id="@+id/video_list_tv_name"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="5dp" />
+
         <View
-            android:background="@color/cardview_dark_background"
             android:layout_width="match_parent"
-            android:layout_height="1dp"/>
+            android:layout_height="1dp"
+            android:background="#DFDFDF" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

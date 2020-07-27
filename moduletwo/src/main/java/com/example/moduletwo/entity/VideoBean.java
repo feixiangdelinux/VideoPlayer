@@ -1,8 +1,9 @@
 package com.example.moduletwo.entity;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class VideoBean {
+public class VideoBean implements Serializable {
 
     private int id;
     private String name;

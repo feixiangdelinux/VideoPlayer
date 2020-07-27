@@ -5,12 +5,11 @@ import android.content.ClipboardManager
 import android.content.Context
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import com.billy.cc.core.component.CCUtil
 import com.ccg.libbase.BaseActivityB
 import com.example.moduletwo.R
 import com.example.moduletwo.adapter.VideoListAdapter
 import com.example.moduletwo.databinding.ActivityVideoListBinding
-import com.example.moduletwo.entity.RoomBean
+import com.example.moduletwo.util.FinalProvider
 import com.example.moduletwo.util.NavigationUtils
 import com.example.moduletwo.viewmodel.VideoListViewModel
 import com.google.gson.GsonBuilder
@@ -27,10 +26,10 @@ import timber.log.Timber
 class VideoListActivity : BaseActivityB<VideoListViewModel>() {
     override fun providerVMClass(): Class<VideoListViewModel>? =
         VideoListViewModel::class.java
+
     private lateinit var binding: ActivityVideoListBinding
-    private var url = ""
     private var adapter = VideoListAdapter()
-    private val context =this
+    private val context = this
     override fun initView() {
         binding = DataBindingUtil.setContentView<ActivityVideoListBinding>(
             this,
@@ -39,20 +38,16 @@ class VideoListActivity : BaseActivityB<VideoListViewModel>() {
     }
 
     override fun initData() {
-        val json = intent.getStringExtra("json")
-        val data =
-            GsonBuilder().create().fromJson<RoomBean.DataBean>(json, RoomBean.DataBean::class.java)
-        url = data.roomUrl
         binding.recyclerView.adapter = adapter
-        getData()
+        adapter.setNewData(FinalProvider.getFinalData())
     }
 
     override fun setListener() {
         adapter.setOnItemClickListener { adapter, view, position ->
             viewModel.uiData.value?.run {
-
                 val clickData = this[position]
-                val clipboardManagerOne = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clipboardManagerOne =
+                    context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 clipboardManagerOne.setPrimaryClip(ClipData.newPlainText(null, clickData.getvUrl()))
                 val json = GsonBuilder().create().toJson(clickData)
                 NavigationUtils.goVideoPlayActivity(json)
@@ -64,7 +59,7 @@ class VideoListActivity : BaseActivityB<VideoListViewModel>() {
         super.startObserve()
         viewModel.apply {
             uiData.observe(context, Observer {
-                adapter.setNewData(it)
+
             })
             errMsg.observe(context, Observer {
                 Timber.e("加载失败$it")
@@ -74,6 +69,6 @@ class VideoListActivity : BaseActivityB<VideoListViewModel>() {
 
     override fun getData() {
         super.getData()
-        viewModel.initData(url)
+//        viewModel.initData()
     }
 }

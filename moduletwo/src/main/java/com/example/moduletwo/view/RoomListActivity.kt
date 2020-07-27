@@ -7,7 +7,6 @@ import com.ccg.libbase.BaseActivityB
 import com.example.moduletwo.R
 import com.example.moduletwo.adapter.RoomListAdapter
 import com.example.moduletwo.databinding.ActivityVideoListBinding
-import com.example.moduletwo.util.NavigationUtils
 import com.example.moduletwo.viewmodel.RoomListViewModel
 import com.google.gson.GsonBuilder
 import timber.log.Timber
@@ -15,7 +14,7 @@ import timber.log.Timber
 /**
  * @author : C4_雍和
  * 描述 :视频房间列表
- * 主要功能 :
+ * 主要功能 :显示所有的房间
  * 维护人员 : C4_雍和
  * date : 20-7-2 下午4:52
  */
@@ -39,12 +38,12 @@ class RoomListActivity : BaseActivityB<RoomListViewModel>() {
     }
 
     override fun setListener() {
-        adapter.setOnItemClickListener { adapter, view, position ->
+        adapter.setOnItemClickListener { _, _, position ->
             viewModel.uiData.value?.run {
                 val clickData = data[position]
                 val json = GsonBuilder().create().toJson(clickData)
-                val intent=Intent(context,VideoListActivity::class.java)
-                intent.putExtra("json",json)
+                val intent = Intent(context, VideoTypeActivity::class.java)
+                intent.putExtra("json", json)
                 startActivity(intent)
             }
         }

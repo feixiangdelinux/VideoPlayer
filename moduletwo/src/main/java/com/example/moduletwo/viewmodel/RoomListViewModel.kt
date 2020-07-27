@@ -2,8 +2,11 @@ package com.example.moduletwo.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import com.ccg.libbase.BaseViewModelB
+import com.ccg.libbase.util.ACache
 import com.example.moduletwo.entity.RoomBean
 import com.example.moduletwo.repository.NetRepository
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -20,16 +23,23 @@ class RoomListViewModel : BaseViewModelB() {
     var uiData: MutableLiveData<RoomBean> = MutableLiveData()
     val errMsg: MutableLiveData<String> = MutableLiveData()
     fun initData() {
-        addDisposable(
-            repository.getRoomListData()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    uiData.postValue(it)
-                }, {
-                    Timber.e("获取房间列表失败:  ${it.message}")
-                })
-        )
-
+        val json = ACache.get().getAsString("RoomListActivity")
+        if (json.isNullOrEmpty()) {
+            addDisposable(
+                repository.getRoomListData()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        uiData.postValue(it)
+                        val jsonData = GsonBuilder().create().toJson(it)
+                        ACache.get().put("RoomListActivity", jsonData, ACache.TIME_DAY)
+                    }, {
+                        Timber.e("获取房间列表失败:  ${it.message}")
+                    })
+            )
+        } else {
+            val data = GsonBuilder().create().fromJson<RoomBean>(json, RoomBean::class.java)
+            uiData.postValue(data)
+        }
     }
 }
