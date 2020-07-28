@@ -43,12 +43,9 @@ class VideoListActivity : BaseActivityB<VideoListViewModel>() {
     }
 
     override fun setListener() {
-        adapter.setOnItemClickListener { adapter, view, position ->
-            viewModel.uiData.value?.run {
+        adapter.setOnItemClickListener { _, _, position ->
+            FinalProvider.getFinalData().run {
                 val clickData = this[position]
-                val clipboardManagerOne =
-                    context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                clipboardManagerOne.setPrimaryClip(ClipData.newPlainText(null, clickData.getvUrl()))
                 val json = GsonBuilder().create().toJson(clickData)
                 NavigationUtils.goVideoPlayActivity(json)
             }
