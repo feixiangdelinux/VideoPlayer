@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.Window
 import android.view.WindowManager
 import com.billy.cc.core.component.CCUtil
 import com.google.gson.GsonBuilder
@@ -17,22 +18,22 @@ class VideoPlayActivity : Activity() {
     private val context = this
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_video_play)
+        videoPlayer = findViewById<StandardGSYVideoPlayer>(R.id.detail_player)
+        //设置旋转
+        orientationUtils = OrientationUtils(this, videoPlayer)
         val json = CCUtil.getNavigateParam(
             this,
             "json",
             ""
         )
         val tempData = GsonBuilder().create().fromJson<VideoBean>(json, VideoBean::class.java)
-        videoPlayer = findViewById<StandardGSYVideoPlayer>(R.id.detail_player)
         videoPlayer.setUp(tempData.vUrl, true, tempData.name)
-//        videoPlayer.setUp("https://2.ddyunbo.com/20200607/zQHRlkLH/index.m3u8", true, "测试视频")
         //增加title
-        videoPlayer.titleTextView.visibility = View.VISIBLE;
+        videoPlayer.titleTextView.visibility = View.VISIBLE
         //设置返回键
-        videoPlayer.backButton.visibility = View.VISIBLE;
-        //设置旋转
-        orientationUtils = OrientationUtils(this, videoPlayer);
+        videoPlayer.backButton.visibility = View.VISIBLE
         //设置全屏按键功能,这是使用的是选择屏幕，而不是全屏
         videoPlayer.fullscreenButton
             .setOnClickListener {
@@ -43,7 +44,6 @@ class VideoPlayActivity : Activity() {
                 )
                 hideBottomMenu()
                 orientationUtils.resolveByClick()
-
             }
         //是否可以滑动调整
         videoPlayer.setIsTouchWiget(true)

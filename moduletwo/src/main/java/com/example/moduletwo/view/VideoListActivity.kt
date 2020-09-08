@@ -1,15 +1,11 @@
 package com.example.moduletwo.view
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.ccg.libbase.BaseActivityB
 import com.example.moduletwo.R
 import com.example.moduletwo.adapter.VideoListAdapter
 import com.example.moduletwo.databinding.ActivityVideoListBinding
-import com.example.moduletwo.util.FinalProvider
 import com.example.moduletwo.util.NavigationUtils
 import com.example.moduletwo.viewmodel.VideoListViewModel
 import com.google.gson.GsonBuilder
@@ -30,6 +26,7 @@ class VideoListActivity : BaseActivityB<VideoListViewModel>() {
     private lateinit var binding: ActivityVideoListBinding
     private var adapter = VideoListAdapter()
     private val context = this
+    private var url = ""
     override fun initView() {
         binding = DataBindingUtil.setContentView<ActivityVideoListBinding>(
             this,
@@ -38,13 +35,16 @@ class VideoListActivity : BaseActivityB<VideoListViewModel>() {
     }
 
     override fun initData() {
+        intent.getStringExtra("json")?.run {
+            url = this
+        }
         binding.recyclerView.adapter = adapter
-        adapter.setNewData(FinalProvider.getFinalData())
+        getData()
     }
 
     override fun setListener() {
         adapter.setOnItemClickListener { _, _, position ->
-            FinalProvider.getFinalData().run {
+            viewModel.uiData.value?.run {
                 val clickData = this[position]
                 val json = GsonBuilder().create().toJson(clickData)
                 NavigationUtils.goVideoPlayActivity(json)
@@ -56,7 +56,7 @@ class VideoListActivity : BaseActivityB<VideoListViewModel>() {
         super.startObserve()
         viewModel.apply {
             uiData.observe(context, Observer {
-
+                adapter.setNewData(it)
             })
             errMsg.observe(context, Observer {
                 Timber.e("加载失败$it")
@@ -66,6 +66,6 @@ class VideoListActivity : BaseActivityB<VideoListViewModel>() {
 
     override fun getData() {
         super.getData()
-//        viewModel.initData()
+        viewModel.initData(url)
     }
 }

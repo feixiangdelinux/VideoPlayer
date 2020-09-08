@@ -1,7 +1,9 @@
 package com.example.moduletwo.repository
 
+import com.example.moduletwo.entity.FinalListBean
 import com.example.moduletwo.entity.FinalVideoBean
 import com.example.moduletwo.entity.RoomBean
+import com.example.moduletwo.entity.RoomListBean
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import retrofit2.Retrofit
@@ -26,7 +28,7 @@ class NetRepository {
      * 获取房间信息
      * @return Observable<RoomBean>
      */
-    fun getListData(url :String): Observable<FinalVideoBean> {
+    fun getListData(url :String): Observable<RoomListBean> {
         return netService.getListData(url)
             .subscribeOn(Schedulers.io())
     }
@@ -36,6 +38,14 @@ class NetRepository {
      */
     fun getRoomListData(): Observable<RoomBean> {
         return netService.getRoomListData()
+            .subscribeOn(Schedulers.io())
+    }
+    /**
+     * 获取房间信息
+     * @return Observable<RoomBean>
+     */
+    fun getVideoFinalData(url :String): Observable<FinalListBean> {
+        return netService.getVideoFinalData(url)
             .subscribeOn(Schedulers.io())
     }
 }

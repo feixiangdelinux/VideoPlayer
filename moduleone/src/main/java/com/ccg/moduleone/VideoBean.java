@@ -8,16 +8,15 @@ package com.ccg.moduleone;
  * date : 20-3-22 下午10:41
  */
 public class VideoBean {
-
     /**
-     * id : 2
-     * name : 手机小视频第1160集
-     * url : https://www.9123nn.com/vod/html7/28257.html
+     * id : 1
+     * name : アフター6～汗臭いのが好きなの-1 番号：heyzo__2326_full
+     * url : http://www.dm528.com/?m=vod-play-id-13902-src-1-num-1.html
      * e :
      * i : 1
-     * tags : 综合
-     * pUrl : https://pppp.642p.com/88/2020/01/v1364l0n.gif
-     * vUrl : https://d2.xia12345.com/down/88/2020/01/v1364l0n.mp4
+     * tags : 上传的视频
+     * pUrl : https://pic.chinaclip.net/pic/upload/vod/2020-09-07/202009071599453723.jpg
+     * vUrl : https://qq.com-ixx-qq.com/20200906/12611_1d0b8816/index.m3u8
      */
 
     private int id;

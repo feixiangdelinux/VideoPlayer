@@ -5,6 +5,7 @@ import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.example.moduletwo.R
+import com.example.moduletwo.entity.FinalListBean
 import com.example.moduletwo.entity.VideoBean
 
 /**
@@ -14,10 +15,10 @@ import com.example.moduletwo.entity.VideoBean
  * 维护人员 : C4_雍和
  * date : 20-4-5 下午2:34
  */
-class VideoListAdapter  : BaseQuickAdapter<VideoBean, BaseViewHolder>(R.layout.item_video_list) {
-    override fun convert(helper: BaseViewHolder, item:VideoBean) {
+class VideoListAdapter  : BaseQuickAdapter<FinalListBean.DataBean, BaseViewHolder>(R.layout.item_video_list) {
+    override fun convert(helper: BaseViewHolder, item:FinalListBean.DataBean) {
         helper.setText(R.id.video_list_tv_name,item.name)
-        Glide.with(context).load(item.getpUrl())
+        Glide.with(context).load(item.pUrl)
             .into(helper.getView<ImageView>(R.id.video_list_iv_ic))
     }
 }

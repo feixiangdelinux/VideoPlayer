@@ -7,13 +7,8 @@ import com.ccg.libbase.BaseActivityB
 import com.example.moduletwo.R
 import com.example.moduletwo.adapter.VideoTypeAdapter
 import com.example.moduletwo.databinding.ActivityVideoListBinding
-import com.example.moduletwo.entity.RoomBean
-import com.example.moduletwo.entity.VideoBean
-import com.example.moduletwo.util.FinalProvider
 import com.example.moduletwo.viewmodel.VideoTypeViewModel
-import com.google.gson.GsonBuilder
 import timber.log.Timber
-import java.io.Serializable
 
 /**
  * @author : C4_雍和
@@ -38,10 +33,9 @@ class VideoTypeActivity : BaseActivityB<VideoTypeViewModel>() {
     }
 
     override fun initData() {
-        val json = intent.getStringExtra("json")
-        val data =
-            GsonBuilder().create().fromJson<RoomBean.DataBean>(json, RoomBean.DataBean::class.java)
-        url = data.roomUrl
+        intent.getStringExtra("json")?.run {
+            url = this
+        }
         binding.recyclerView.adapter = adapter
         getData()
     }
@@ -49,15 +43,8 @@ class VideoTypeActivity : BaseActivityB<VideoTypeViewModel>() {
     override fun setListener() {
         adapter.setOnItemClickListener { _, _, position ->
             viewModel.uiData.value?.run {
-                val clickData = this[position]
-                val typeDatas: MutableList<VideoBean> = ArrayList()
-                for (i in viewModel.allData) {
-                    if (i.tags == clickData) {
-                        typeDatas.add(i)
-                    }
-                }
-                FinalProvider.setFinalData(typeDatas)
                 val intent = Intent(context, VideoListActivity::class.java)
+                intent.putExtra("json", viewModel.allData[position])
                 startActivity(intent)
             }
         }

@@ -2,8 +2,11 @@ package com.example.moduletwo.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import com.ccg.libbase.BaseViewModelB
+import com.ccg.libbase.util.ACache
+import com.example.moduletwo.entity.FinalListBean
 import com.example.moduletwo.entity.VideoBean
 import com.example.moduletwo.repository.NetRepository
+import com.google.gson.GsonBuilder
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -17,9 +20,20 @@ import timber.log.Timber
  */
 class VideoListViewModel : BaseViewModelB() {
     private val repository by lazy { NetRepository() }
-    var uiData: MutableLiveData<MutableList<VideoBean>> = MutableLiveData()
+    var uiData: MutableLiveData<MutableList<FinalListBean.DataBean>> = MutableLiveData()
     val errMsg: MutableLiveData<String> = MutableLiveData()
-    fun initData() {
 
+    fun initData(url: String) {
+        addDisposable(
+            repository.getVideoFinalData(url)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    uiData.postValue(it.data)
+                }, {
+                    errMsg.postValue("获取房间列表失败:  ${it.message}")
+                    Timber.e("获取房间列表失败:  ${it.message}")
+                })
+        )
     }
 }

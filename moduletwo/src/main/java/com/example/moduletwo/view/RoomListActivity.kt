@@ -41,9 +41,8 @@ class RoomListActivity : BaseActivityB<RoomListViewModel>() {
         adapter.setOnItemClickListener { _, _, position ->
             viewModel.uiData.value?.run {
                 val clickData = data[position]
-                val json = GsonBuilder().create().toJson(clickData)
                 val intent = Intent(context, VideoTypeActivity::class.java)
-                intent.putExtra("json", json)
+                intent.putExtra("json", clickData.roomUrl)
                 startActivity(intent)
             }
         }
