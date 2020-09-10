@@ -3,6 +3,8 @@ package com.example.moduletwo.viewmodel
 import androidx.lifecycle.MutableLiveData
 import com.ccg.libbase.BaseViewModelB
 import com.ccg.libbase.util.ACache
+import com.example.moduletwo.entity.FinalListBean
+import com.example.moduletwo.entity.RoomListBean
 import com.example.moduletwo.repository.NetRepository
 import com.google.gson.GsonBuilder
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -22,21 +24,30 @@ class VideoTypeViewModel : BaseViewModelB() {
     val errMsg: MutableLiveData<String> = MutableLiveData()
     val allData: MutableList<String> = ArrayList()
     fun initData(url: String) {
-        addDisposable(
-            repository.getListData(url)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    allData.clear()
-                    allData.addAll(it.videoUrl)
-                    uiData.postValue(it.videoTag)
-                    val jsonData = GsonBuilder().create().toJson(it)
-                    ACache.get().put(url, jsonData, ACache.TIME_DAY)
-                }, {
-                    errMsg.postValue("获取房间列表失败:  ${it.message}")
-                    Timber.e("获取房间列表失败:  ${it.message}")
-                })
-        )
+        val json = ACache.get().getAsString(url)
+        if (json.isNullOrEmpty()) {
+            addDisposable(
+                repository.getListData(url)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        allData.clear()
+                        allData.addAll(it.videoUrl)
+                        uiData.postValue(it.videoTag)
+                        val jsonData = GsonBuilder().create().toJson(it)
+                        ACache.get().put(url, jsonData, ACache.TIME_DAY)
+                    }, {
+                        errMsg.postValue("获取房间列表失败:  ${it.message}")
+                        Timber.e("获取房间列表失败:  ${it.message}")
+                    })
+            )
 
+        }else{
+            val jsonDatas =
+                GsonBuilder().create().fromJson<RoomListBean>(json, RoomListBean::class.java)
+            allData.clear()
+            allData.addAll(jsonDatas.videoUrl)
+            uiData.postValue(jsonDatas.videoTag)
+        }
     }
 }

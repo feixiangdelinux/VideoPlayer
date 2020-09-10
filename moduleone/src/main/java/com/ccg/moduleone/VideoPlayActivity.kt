@@ -23,11 +23,7 @@ class VideoPlayActivity : Activity() {
         videoPlayer = findViewById<StandardGSYVideoPlayer>(R.id.detail_player)
         //设置旋转
         orientationUtils = OrientationUtils(this, videoPlayer)
-        val json = CCUtil.getNavigateParam(
-            this,
-            "json",
-            ""
-        )
+        val json = CCUtil.getNavigateParam(this, "json", "")
         val tempData = GsonBuilder().create().fromJson<VideoBean>(json, VideoBean::class.java)
         videoPlayer.setUp(tempData.vUrl, true, tempData.name)
         //增加title
@@ -38,10 +34,7 @@ class VideoPlayActivity : Activity() {
         videoPlayer.fullscreenButton
             .setOnClickListener {
                 //设置全屏
-                window.setFlags(
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN
-                )
+                window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
                 hideBottomMenu()
                 orientationUtils.resolveByClick()
             }
@@ -50,7 +43,6 @@ class VideoPlayActivity : Activity() {
         //设置返回按键功能
         videoPlayer.backButton.setOnClickListener { onBackPressed() }
         videoPlayer.startPlayLogic()
-
     }
 
     /**
@@ -61,9 +53,7 @@ class VideoPlayActivity : Activity() {
         if (Build.VERSION.SDK_INT in 12..18) {
             v.systemUiVisibility = View.GONE
         } else {
-            val uiOptions = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN)
+            val uiOptions = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_FULLSCREEN)
             v.systemUiVisibility = uiOptions
         }
     }
