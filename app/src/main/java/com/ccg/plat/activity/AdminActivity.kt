@@ -1,6 +1,7 @@
 package com.ccg.plat.activity
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -74,14 +75,13 @@ class AdminActivity : ComponentActivity() {
         val jpushClient = JPushClient(masterSecret, appKey, null, clientConfig)
         val payload = buildPushObject_android_and_ios(registrationId)
         try {
-            Timber.e("准备推送")
             val result = jpushClient.sendPush(payload)
-            Timber.e("准备完成")
+            Toast.makeText(context,"VIP开通成功",Toast.LENGTH_SHORT).show()
         } catch (e: APIConnectionException) {
             Timber.e("出错1")
+            Toast.makeText(context,"出错1  "+ e.message,Toast.LENGTH_SHORT).show()
         } catch (e: APIRequestException) {
-            Timber.e("出错2" + e.message)
-            Timber.e("出错2" + e.errorMessage)
+            Toast.makeText(context,"出错2  "+ e.message,Toast.LENGTH_SHORT).show()
         }
     }
 
