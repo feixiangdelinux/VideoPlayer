@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,9 +15,7 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -25,18 +24,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.jpush.android.api.JPushInterface
+import com.ccg.plat.Const
 import com.ccg.plat.R
 import com.ccg.plat.entity.NavigationItem
 import com.ccg.plat.ui.theme.ColorPrimary
 import com.ccg.plat.ui.theme.TextColor2
 import com.ccg.plat.ui.theme.VideoPlayerTheme
 import com.ccg.plat.util.copyStr
-import timber.log.Timber
 
+/**
+ * @author : C4_雍和
+ * 描述 :
+ * 主要功能 :
+ * 维护人员 : C4_雍和
+ * date : 2022/10/18 10:17
+ */
 class MainActivity : ComponentActivity() {
     val context = this
     val mainBottomButtonDatas by lazy { mutableStateListOf<NavigationItem>() }
     var currentNavigationIndex = mutableStateOf(0)
+    var isShowfdsa = 10
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainBottomButtonDatas.add(NavigationItem(title = "首页", selectedId = R.mipmap.main_shouye_light, unSelectedId = R.mipmap.main_shouye_dark))
@@ -86,6 +93,19 @@ class MainActivity : ComponentActivity() {
     fun MyUI() {
         Column(modifier = Modifier.fillMaxSize().padding(start = 10.dp)) {
             Spacer(modifier = Modifier.height(12.dp))
+            Row(modifier = Modifier.fillMaxWidth().height(50.dp)) {
+                var isShow by remember { mutableStateOf("免费用户") }
+                LaunchedEffect(Const.IS_VIP) {
+                    isShow = if (Const.IS_VIP) {
+                        "VIP"
+                    } else {
+                        "免费用户"
+                    }
+                }
+                Text(
+                    text = "您当前的状态:   $isShow"
+                )
+            }
             Text(text = "免费用户每天能看20条视频,VIP用户无限制")
             Spacer(modifier = Modifier.height(12.dp))
             Text(text = "购买VIP流程:微信或QQ任选")
@@ -119,6 +139,17 @@ class MainActivity : ComponentActivity() {
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(text = "" + JPushInterface.getRegistrationID(context))
             }
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(text = "注意: 软件卸载VIP就会消失,在想开通就需要在花钱,切记没事别卸载")
+            Box(modifier = Modifier.fillMaxWidth().height(12.dp).clickable(interactionSource = MutableInteractionSource(), indication = null) {
+                if (isShowfdsa > 0) {
+                    isShowfdsa -= 1
+                } else {
+                    startActivity(Intent(context, AdminActivity::class.java))
+                }
+            }) {
+
+            }
         }
     }
 
@@ -128,7 +159,7 @@ class MainActivity : ComponentActivity() {
             item {
                 Spacer(modifier = Modifier.height(10.dp))
                 Box(modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(horizontal = 10.dp).shadow(elevation = 1.dp, shape = RoundedCornerShape(1.dp)).padding(vertical = 10.dp).clickable {
-                startActivity(Intent(context, VideoOneActivity::class.java))
+                    startActivity(Intent(context, VideoOneActivity::class.java))
                 }, contentAlignment = Alignment.Center) {
                     Text(text = "小黄人播放器")
                 }

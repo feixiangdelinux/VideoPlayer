@@ -44,6 +44,7 @@
         <activity android:name=".activity.VideoOneActivity" />
         <activity android:name=".activity.VideoTwoActivity" />
         <activity android:name=".activity.VideoThreeActivity" />
+        <activity android:name=".activity.AdminActivity" />
         <activity
             android:name=".activity.VideoPlayActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"

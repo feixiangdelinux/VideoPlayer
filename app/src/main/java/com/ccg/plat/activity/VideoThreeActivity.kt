@@ -2,6 +2,7 @@ package com.ccg.plat.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.ccg.plat.Const
 import com.ccg.plat.entity.VideoListBean
 import com.ccg.plat.repository.GitHubService
 import com.ccg.plat.ui.theme.VideoPlayerTheme
@@ -41,12 +43,14 @@ class VideoThreeActivity : ComponentActivity() {
         .baseUrl("https://siyou.nos-eastchina1.126.net/")
         .addConverterFactory(GsonConverterFactory.create())
         .build().create(GitHubService::class.java)
-
+    val kv = MMKV.defaultMMKV()
+    var playNumber = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         intent.getStringExtra("url")?.run {
             url = this
         }
+        playNumber = kv.decodeInt("playNumber")
         setContent {
             VideoPlayerTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
@@ -61,7 +65,7 @@ class VideoThreeActivity : ComponentActivity() {
         var isLoading by remember { mutableStateOf(true) }
         val listName = remember { mutableStateListOf<VideoListBean.Data>() }
         LaunchedEffect(Unit) {
-            val kv = MMKV.defaultMMKV()
+
             val json = kv.decodeString(url)
             if (json.isNullOrEmpty()) {
                 val data = retrofit.getVideoFinalData(url)
@@ -100,11 +104,26 @@ class VideoThreeActivity : ComponentActivity() {
             LazyColumn(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
                 items(items = listName) {
                     Spacer(modifier = Modifier.height(10.dp))
-                    Row(modifier = Modifier.fillMaxWidth().wrapContentHeight().shadow(elevation = 1.dp, shape = RoundedCornerShape(1.dp)).padding(10.dp).clickable {
-                        val intent = Intent(context, VideoPlayActivity::class.java)
-                        intent.putExtra("url", it.vUrl)
-                        intent.putExtra("name", it.name)
-                        startActivity(intent)
+                    Row(modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(horizontal = 10.dp).shadow(elevation = 1.dp, shape = RoundedCornerShape(1.dp)).padding(10.dp).clickable {
+                       if(Const.IS_VIP){
+                           val intent = Intent(context, VideoPlayActivity::class.java)
+                           intent.putExtra("url", it.vUrl)
+                           intent.putExtra("name", it.name)
+                           startActivity(intent)
+                       }else{
+                           if (playNumber <= 10) {
+                               //可以正常播放
+                               playNumber += 1
+                               kv.encode("playNumber", playNumber)
+                               val intent = Intent(context, VideoPlayActivity::class.java)
+                               intent.putExtra("url", it.vUrl)
+                               intent.putExtra("name", it.name)
+                               startActivity(intent)
+                           } else {
+                               //提示不充钱每天智能看10次
+                               Toast.makeText(context, "不充钱每天只能看10次", Toast.LENGTH_LONG).show()
+                           }
+                       }
                     }, verticalAlignment = Alignment.CenterVertically) {
                         AsyncImage(model = it.pUrl, contentDescription = null, modifier = Modifier.size(100.dp))
                         Spacer(modifier = Modifier.width(10.dp))

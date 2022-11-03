@@ -49,6 +49,7 @@ android {
         kotlinCompilerExtensionVersion '1.1.1'
     }
     packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
@@ -82,4 +83,7 @@ dependencies {
     implementation 'cn.jiguang.sdk:jpush:4.8.4'
     implementation 'cn.jiguang.sdk:jcore:3.3.6'
     implementation 'com.tencent:mmkv:1.2.14'
+
+    implementation 'cn.jpush.api:jpush-client:3.6.6'
+    implementation 'cn.jpush.api:jiguang-common:1.2.2'
 }

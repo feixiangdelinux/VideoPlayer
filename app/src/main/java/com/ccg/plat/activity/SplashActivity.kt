@@ -13,7 +13,9 @@ import androidx.compose.ui.Modifier
 import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.PermissionUtils
 import com.blankj.utilcode.util.PermissionUtils.FullCallback
+import com.blankj.utilcode.util.SPUtils
 import com.blankj.utilcode.util.ToastUtils
+import com.ccg.plat.Const
 import com.ccg.plat.repository.GitHubService
 import com.ccg.plat.ui.theme.VideoPlayerTheme
 import com.ccg.plat.util.ACache
@@ -51,6 +53,7 @@ class SplashActivity : ComponentActivity() {
                 }
             }
         }
+        Const.IS_VIP = !SPUtils.getInstance().getString("userInfo").isNullOrEmpty()
     }
 
     @Composable

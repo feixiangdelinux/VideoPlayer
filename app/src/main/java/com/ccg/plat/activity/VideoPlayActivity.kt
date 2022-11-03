@@ -9,8 +9,13 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.blankj.utilcode.util.ScreenUtils
+import com.blankj.utilcode.util.TimeUtils
 import com.ccg.plat.ui.theme.VideoPlayerTheme
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+import timber.log.Timber
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * @author : C4_雍和
@@ -47,7 +52,7 @@ class VideoPlayActivity : ComponentActivity() {
                             finish()
                         }
                         videoPlay.startPlayLogic()
-                        videoPlay.startWindowFullscreen(context, false, true)
+
                     })
                 }
             }
