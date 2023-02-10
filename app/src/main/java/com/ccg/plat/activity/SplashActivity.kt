@@ -26,7 +26,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import timber.log.Timber
 import java.io.*
 
 /**
@@ -42,7 +41,8 @@ class SplashActivity : ComponentActivity() {
         .baseUrl("https://siyou.nos-eastchina1.126.net/")
         .addConverterFactory(GsonConverterFactory.create())
         .build().create(GitHubService::class.java)
-
+    var isDow = false
+    var title = mutableStateOf("第一次进入如果出更新弹窗那就需要更新app,要么点立即更新去更新app,要么去群里下载最新的app\n" + "软件安装需要两个权限读写权限和安装app的权限,只有都同意才能安装最新的app\n"+ "如果遇到问题加QQ群 463208733\n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -58,7 +58,7 @@ class SplashActivity : ComponentActivity() {
 
     @Composable
     fun SplashUI() {
-        Text(text = "第一次进入如果出更新弹窗那就需要更新app,要么点立即更新去更新app,要么去群里下载最新的app\n软件安装需要两个权限读写权限和安装app的权限,只有都同意才能安装最新的app")
+        Text(text = title.value)
         var showDialog by remember {
             mutableStateOf(false)
         }
@@ -75,13 +75,13 @@ class SplashActivity : ComponentActivity() {
                 val kv = MMKV.defaultMMKV()
                 kv.clearAll()
                 val data = retrofit.getUpdataInfo()
-                if (data.data.version == AppUtils.getAppVersionCode()) {
-                    startActivity(Intent(context, MainActivity::class.java))
-                    finish()
-                } else {
+                if (data.data.version > AppUtils.getAppVersionCode()) {
                     showDialog = true
                     title = data.data.desc
                     downloadUrl = data.data.apkUrl
+                } else {
+                    startActivity(Intent(context, MainActivity::class.java))
+                    finish()
                 }
             } else {
                 startActivity(Intent(context, MainActivity::class.java))
@@ -91,7 +91,7 @@ class SplashActivity : ComponentActivity() {
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = {
-                    showDialog = false
+
                 },
                 title = {
                     Text(text = "更新通知")
@@ -102,7 +102,7 @@ class SplashActivity : ComponentActivity() {
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            title = "开始下载..."
+                            title = "开始下载大概需要3分钟..."
                             checkPermission(downloadUrl)
                         }
                     ) {
@@ -137,65 +137,68 @@ class SplashActivity : ComponentActivity() {
      * 下载app
      */
     private fun downloadApp(apkUrl: String) {
-        retrofit.downloadApp(apkUrl).enqueue(object : Callback<ResponseBody> {
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-            }
-
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                response.body()?.run {
-                    getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.let {
-                        var paths = it.path
-                        Timber.e("aa  " + paths + "xiaohuangren.apk")
-                        if (!paths.endsWith("/")) {
-                            paths = "$paths/"
-                        }
-                        try {
-                            //判断文件夹是否存在
-                            val files = File(paths)
-                            //跟目录一个文件夹
-                            if (!files.exists()) {
-                                //不存在就创建出来
-                                files.mkdirs()
+        if(!isDow){
+            retrofit.downloadApp(apkUrl).enqueue(object : Callback<ResponseBody> {
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                }
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                    response.body()?.run {
+                        getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.let {
+                            var paths = it.path
+                            if (!paths.endsWith("/")) {
+                                paths = "$paths/"
                             }
-                            //创建一个文件
-                            val futureStudioIconFile = File(paths + "xiaohuangren.apk")
-                            //初始化输入流
-                            var inputStream: InputStream? = null
-                            //初始化输出流
-                            var outputStream: OutputStream? = null
                             try {
-                                //设置每次读写的字节
-                                val fileReader = ByteArray(4096)
-                                var fileSizeDownloaded: Long = 0
-                                //请求返回的字节流
-                                inputStream = this.byteStream()
-                                //创建输出流
-                                outputStream = FileOutputStream(futureStudioIconFile)
-                                //进行读取操作
-                                while (true) {
-                                    val read = inputStream!!.read(fileReader)
-                                    if (read == -1) {
-                                        break
-                                    }
-                                    //进行写入操作
-                                    outputStream.write(fileReader, 0, read)
-                                    fileSizeDownloaded += read.toLong()
+                                //判断文件夹是否存在
+                                val files = File(paths)
+                                //跟目录一个文件夹
+                                if (!files.exists()) {
+                                    //不存在就创建出来
+                                    files.mkdirs()
                                 }
-                                //刷新
-                                outputStream.flush()
+                                //创建一个文件
+                                val futureStudioIconFile = File(paths + "xiaohuangren.apk")
+                                //初始化输入流
+                                var inputStream: InputStream? = null
+                                //初始化输出流
+                                var outputStream: OutputStream? = null
+                                try {
+                                    //设置每次读写的字节
+                                    val fileReader = ByteArray(4096)
+                                    var fileSizeDownloaded: Long = 0
+                                    //请求返回的字节流
+                                    inputStream = this.byteStream()
+                                    //创建输出流
+                                    outputStream = FileOutputStream(futureStudioIconFile)
+                                    //进行读取操作
+                                    while (true) {
+                                        val read = inputStream!!.read(fileReader)
+                                        if (read == -1) {
+                                            break
+                                        }
+                                        //进行写入操作
+                                        outputStream.write(fileReader, 0, read)
+                                        fileSizeDownloaded += read.toLong()
+                                    }
+                                    //刷新
+                                    outputStream.flush()
+                                } catch (e: IOException) {
+                                } finally {
+                                    inputStream?.close()
+                                    outputStream?.close()
+                                    title.value="下载完成. 安装文件在   ${paths + "xiaohuangren.apk"}   如果不能自动安装请在文件管理器中找到对应安装包手动安装"
+                                    AppUtils.installApp(paths + "xiaohuangren.apk")
+                                }
                             } catch (e: IOException) {
-                            } finally {
-                                inputStream?.close()
-                                outputStream?.close()
-                                AppUtils.installApp(paths + "xiaohuangren.apk")
                             }
-                        } catch (e: IOException) {
                         }
                     }
                 }
-            }
-        })
+            })
+            isDow=true
+        }else{
+            ToastUtils.showShort("正在下载,大约需要2分钟")
+        }
     }
-
 }
 

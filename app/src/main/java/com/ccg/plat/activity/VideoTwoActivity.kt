@@ -4,19 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ccg.plat.entity.RoomListBean
 import com.ccg.plat.repository.GitHubService
 import com.ccg.plat.ui.theme.VideoPlayerTheme
@@ -35,10 +35,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class VideoTwoActivity : ComponentActivity() {
     val context = this
     private var url = ""
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://siyou.nos-eastchina1.126.net/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build().create(GitHubService::class.java)
+    private val retrofit = Retrofit.Builder().baseUrl("https://siyou.nos-eastchina1.126.net/").addConverterFactory(GsonConverterFactory.create()).build().create(GitHubService::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,13 +107,16 @@ class VideoTwoActivity : ComponentActivity() {
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
                 items(count = listName.size) {
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Box(modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(horizontal = 10.dp).shadow(elevation = 1.dp, shape = RoundedCornerShape(1.dp)).padding(vertical = 10.dp).clickable {
-                        val intent = Intent(context, VideoThreeActivity::class.java)
-                        intent.putExtra("url", listUrl[it])
-                        startActivity(intent)
-                    }, contentAlignment = Alignment.Center) {
-                        Text(text = listName[it])
+                    Column(modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .clickable {
+                            val intent = Intent(context, VideoThreeActivity::class.java)
+                            intent.putExtra("url", listUrl[it])
+                            startActivity(intent)
+                        }) {
+                        Text(text = listName[it],modifier = Modifier.padding(start = 20.dp,top= 15.dp,bottom= 15.dp),fontSize = 20.sp)
+                        Divider(thickness = 1.dp)
                     }
                 }
             }

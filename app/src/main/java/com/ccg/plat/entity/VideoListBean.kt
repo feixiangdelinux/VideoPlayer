@@ -1,7 +1,7 @@
 package com.ccg.plat.entity
 
 data class VideoListBean(
-    val `data`: List<Data>,
+    val `data`: MutableList<Data>,
     val videoTag: String
 ) {
     data class Data(

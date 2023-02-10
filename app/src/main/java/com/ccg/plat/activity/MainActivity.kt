@@ -10,15 +10,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -56,15 +51,11 @@ class MainActivity : ComponentActivity() {
                             BottomNavigationItem(selected = currentNavigationIndex.value == index, onClick = {
                                 currentNavigationIndex.value = index
                             }, icon = {
-                                Image(
-                                    painter = painterResource(
-                                        id = if (currentNavigationIndex.value == index) {
-                                            navigationItem.selectedId
-                                        } else {
-                                            navigationItem.unSelectedId
-                                        }
-                                    ), contentDescription = null
-                                )
+                                Image(painter = painterResource(id = if (currentNavigationIndex.value == index) {
+                                    navigationItem.selectedId
+                                } else {
+                                    navigationItem.unSelectedId
+                                }), contentDescription = null)
                             }, label = {
                                 val col = if (currentNavigationIndex.value == index) {
                                     ColorPrimary
@@ -91,9 +82,13 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun MyUI() {
-        Column(modifier = Modifier.fillMaxSize().padding(start = 10.dp)) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 10.dp)) {
             Spacer(modifier = Modifier.height(12.dp))
-            Row(modifier = Modifier.fillMaxWidth().height(50.dp)) {
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)) {
                 var isShow by remember { mutableStateOf("免费用户") }
                 LaunchedEffect(Const.IS_VIP) {
                     isShow = if (Const.IS_VIP) {
@@ -102,11 +97,9 @@ class MainActivity : ComponentActivity() {
                         "免费用户"
                     }
                 }
-                Text(
-                    text = "您当前的状态:   $isShow"
-                )
+                Text(text = "您当前的状态:   $isShow")
             }
-            Text(text = "免费用户每天能看20条视频,VIP用户无限制")
+            Text(text = "免费用户每天能看10条视频,VIP用户无限制")
             Spacer(modifier = Modifier.height(12.dp))
             Text(text = "购买VIP流程:微信或QQ任选")
             Spacer(modifier = Modifier.height(12.dp))
@@ -115,39 +108,51 @@ class MainActivity : ComponentActivity() {
             Text(text = "2点击微信号,就能复制,然后去微信里添加好友")
             Spacer(modifier = Modifier.height(12.dp))
             Text(text = "开通VIP需要提供用户名,点击用户名就能复制")
-            Row(modifier = Modifier.fillMaxWidth().height(40.dp).clickable {
-                Toast.makeText(context, "QQ群号复制成功", Toast.LENGTH_SHORT).show()
-                context.copyStr("463208733")
-            }, verticalAlignment = Alignment.CenterVertically) {
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .clickable {
+                    Toast.makeText(context, "QQ群号复制成功", Toast.LENGTH_SHORT).show()
+                    context.copyStr("463208733")
+                }, verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "QQ群号:")
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(text = "463208733")
             }
-            Row(modifier = Modifier.fillMaxWidth().height(40.dp).clickable {
-                Toast.makeText(context, "微信号复制成功", Toast.LENGTH_SHORT).show()
-                context.copyStr("957493412")
-            }, verticalAlignment = Alignment.CenterVertically) {
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .clickable {
+                    Toast.makeText(context, "微信号复制成功", Toast.LENGTH_SHORT).show()
+                    context.copyStr("957493412")
+                }, verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "微信号:")
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(text = "957493412")
             }
-            Row(modifier = Modifier.fillMaxWidth().height(40.dp).clickable {
-                Toast.makeText(context, "用户名复制成功", Toast.LENGTH_SHORT).show()
-                context.copyStr(JPushInterface.getRegistrationID(context))
-            }, verticalAlignment = Alignment.CenterVertically) {
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .clickable {
+                    Toast.makeText(context, "用户名复制成功", Toast.LENGTH_SHORT).show()
+                    context.copyStr(JPushInterface.getRegistrationID(context))
+                }, verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "用户名:")
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(text = "" + JPushInterface.getRegistrationID(context))
             }
             Spacer(modifier = Modifier.height(12.dp))
             Text(text = "注意: 软件卸载VIP就会消失,在想开通就需要在花钱,切记没事别卸载")
-            Box(modifier = Modifier.fillMaxWidth().height(12.dp).clickable(interactionSource = MutableInteractionSource(), indication = null) {
-                if (isShowfdsa > 0) {
-                    isShowfdsa -= 1
-                } else {
-                    startActivity(Intent(context, AdminActivity::class.java))
-                }
-            }) {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .clickable(interactionSource = MutableInteractionSource(), indication = null) {
+                    if (isShowfdsa > 0) {
+                        isShowfdsa -= 1
+                    } else {
+                        startActivity(Intent(context, AdminActivity::class.java))
+                    }
+                }) {
 
             }
         }
@@ -157,13 +162,27 @@ class MainActivity : ComponentActivity() {
     fun MainUI() {
         LazyColumn(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             item {
-                Spacer(modifier = Modifier.height(10.dp))
-                Box(modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(horizontal = 10.dp).shadow(elevation = 1.dp, shape = RoundedCornerShape(1.dp)).padding(vertical = 10.dp).clickable {
-                    startActivity(Intent(context, VideoOneActivity::class.java))
-                }, contentAlignment = Alignment.Center) {
-                    Text(text = "小黄人播放器")
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .clickable {
+                        startActivity(Intent(context, VideoOneActivity::class.java))
+                    }) {
+                    Text(text = "小黄人播放器", modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 20.sp)
+                    Divider(thickness = 1.dp)
                 }
-                Spacer(modifier = Modifier.height(10.dp))
+            }
+
+            item {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .clickable {
+                        startActivity(Intent(context, CollectionActivity::class.java))
+                    }) {
+                    Text(text = "收藏夹", modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 20.sp)
+                    Divider(thickness = 1.dp)
+                }
             }
         }
     }
