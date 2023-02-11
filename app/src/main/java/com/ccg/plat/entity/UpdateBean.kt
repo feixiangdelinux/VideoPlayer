@@ -7,7 +7,6 @@ data class UpdateBean(
     data class Data(
         val apkUrl: String,
         val desc: String,
-        val token: String,
         val version: Int
     )
 }
