@@ -1,6 +1,7 @@
 package com.ccg.plat.activity
 
 import android.app.Activity
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
@@ -9,7 +10,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import com.blankj.utilcode.util.*
+import com.blankj.utilcode.util.ScreenUtils
 import com.ccg.plat.Const
 import com.ccg.plat.R
 import com.ccg.plat.entity.VideoListBean
@@ -20,7 +21,6 @@ import com.shuyu.gsyvideoplayer.player.PlayerFactory
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
 import com.tencent.mmkv.MMKV
-import timber.log.Timber
 import tv.danmaku.ijk.media.exo2.Exo2PlayerManager
 
 
@@ -42,6 +42,7 @@ class SimplePlayerActivity : Activity() {
 
     //收藏列表数据
     var collectionData: MutableList<VideoListBean.Data> = ArrayList()
+
     //播放列表数据
     var playData: MutableList<VideoListBean.Data> = ArrayList()
     var index = 0
@@ -63,12 +64,12 @@ class SimplePlayerActivity : Activity() {
         } else {
             collectionData.addAll(GsonBuilder().create().fromJson<MutableList<VideoListBean.Data>>(json, object : TypeToken<MutableList<VideoListBean.Data>>() {}.type))
         }
-        if(tag==0){
+        if (tag == 0) {
             intent.getStringExtra("key")?.run {
                 val saveData = GsonBuilder().create().fromJson(kv.decodeString(this), VideoListBean::class.java)
                 playData.addAll(saveData.data)
             }
-        }else if(tag==1){
+        } else if (tag == 1) {
             playData.addAll(collectionData)
         }
         init()
@@ -89,7 +90,7 @@ class SimplePlayerActivity : Activity() {
         }
         videoPlayer.setIsTouchWiget(true)
         videoPlayer.backButton.setOnClickListener {
-            if(ScreenUtils.isLandscape()){
+            if (ScreenUtils.isLandscape()) {
                 ScreenUtils.setPortrait(context)
             }
             onBackPressed()
@@ -149,9 +150,10 @@ class SimplePlayerActivity : Activity() {
         videoPlayer.setVideoAllCallBack(null)
         super.onBackPressed()
     }
+
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK && event.repeatCount == 0) {
-            if(ScreenUtils.isLandscape()){
+            if (ScreenUtils.isLandscape()) {
                 ScreenUtils.setPortrait(context)
             }
             onBackPressed()
@@ -160,3 +162,24 @@ class SimplePlayerActivity : Activity() {
         return super.onKeyDown(keyCode, event)
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

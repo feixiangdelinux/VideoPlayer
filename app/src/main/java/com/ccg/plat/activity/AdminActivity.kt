@@ -64,13 +64,25 @@ class AdminActivity : ComponentActivity() {
                         Button(onClick = {
                             if (input.trim().isNotEmpty()) {
                                 MainScope().launch(Dispatchers.IO) {
-                                    testSendPush(registrationId = input)
+                                    testSendPush(registrationId = input, alert = "您已开通VIP", title = "充值成功")
                                 }
                             }
                         }, modifier = Modifier
                             .fillMaxWidth()
                             .height(55.dp)) {
                             Text(text = "开通VIP")
+                        }
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Button(onClick = {
+                            if (input.trim().isNotEmpty()) {
+                                MainScope().launch(Dispatchers.IO) {
+                                    testSendPush(registrationId = input, alert = "您已关闭VIP", title = "关闭VIP")
+                                }
+                            }
+                        }, modifier = Modifier
+                            .fillMaxWidth()
+                            .height(55.dp)) {
+                            Text(text = "关闭VIP")
                         }
                     }
                 }
@@ -83,13 +95,13 @@ class AdminActivity : ComponentActivity() {
         }
     }
 
-    private fun testSendPush(registrationId: String) {
+    private fun testSendPush(registrationId: String, alert: String, title: String) {
         val clientConfig = ClientConfig.getInstance()
         val jpushClient = JPushClient(masterSecret, appKey, null, clientConfig)
-        val payload = buildPushObject_android_and_ios(registrationId)
+        val payload = buildPush(registrationId, alert, title)
         try {
             val result = jpushClient.sendPush(payload)
-            errMsg.postValue("VIP开通成功  $result")
+            errMsg.postValue("推送成功:  $result")
         } catch (e: APIConnectionException) {
             Timber.e("出错1")
             errMsg.postValue("出错1")
@@ -98,8 +110,7 @@ class AdminActivity : ComponentActivity() {
         }
     }
 
-    private fun buildPushObject_android_and_ios(registrationId: String): PushPayload {
-        return PushPayload.newBuilder().setPlatform(Platform.android_ios()).setAudience(Audience.registrationId(registrationId)).setNotification(Notification.newBuilder().setAlert("您已开通VIP").addPlatformNotification(AndroidNotification.newBuilder().setTitle("充值成功").build()).addPlatformNotification(IosNotification.newBuilder().incrBadge(1).addExtra("extra_key", "extra_value").build()).build())
-            .setOptions(Options.newBuilder().setApnsProduction(false).setTimeToLive(43200).build()).build();
+    private fun buildPush(registrationId: String, alert: String, title: String): PushPayload {
+        return PushPayload.newBuilder().setPlatform(Platform.android_ios()).setAudience(Audience.registrationId(registrationId)).setNotification(Notification.newBuilder().setAlert(alert).addPlatformNotification(AndroidNotification.newBuilder().setTitle(title).build()).addPlatformNotification(IosNotification.newBuilder().incrBadge(1).addExtra("extra_key", "extra_value").build()).build()).setOptions(Options.newBuilder().setApnsProduction(false).setTimeToLive(43200).build()).build();
     }
 }
