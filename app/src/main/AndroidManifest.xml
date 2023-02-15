@@ -44,19 +44,33 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity android:name=".activity.MainActivity" />
-        <activity android:name=".activity.VideoOneActivity" />
-        <activity android:name=".activity.VideoTwoActivity" />
-        <activity android:name=".activity.VideoThreeActivity" />
-        <activity android:name=".activity.AdminActivity" />
-        <activity android:name=".activity.CollectionActivity" />
+        <activity
+            android:name=".activity.MainActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.VideoOneActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.VideoTwoActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.VideoThreeActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.AdminActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.CollectionActivity"
+            android:launchMode="singleTask" />
         <activity
             android:name=".activity.VideoPlayActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.SimplePlayerActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode" />
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:launchMode="singleTask" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
