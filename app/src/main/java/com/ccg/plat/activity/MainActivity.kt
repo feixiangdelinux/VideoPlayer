@@ -153,7 +153,6 @@ class MainActivity : ComponentActivity() {
                         startActivity(Intent(context, AdminActivity::class.java))
                     }
                 }) {
-
             }
         }
     }

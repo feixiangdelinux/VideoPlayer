@@ -1,6 +1,5 @@
 package com.ccg.plat
 
-import android.text.TextUtils.replace
 import com.ccg.plat.entity.VideoBean
 import com.ccg.plat.entity.VideoInfo
 import com.ccg.plat.util.KtStringUtil
@@ -18,7 +17,9 @@ import org.junit.Test
 class AAAUtilTest {
     //    val name = "acb"
 //    val name = "aqdav"
-    val name = "hbsy"
+//    val name = "hbsy"
+//    val name = "langyou"
+    val name = "langyouone"
 //    val name = "aqdtv"
 //    val name = "buzz"
 
@@ -26,7 +27,7 @@ class AAAUtilTest {
     val isLinux = false
 
     private fun getVideoType(name: String): Int {
-        return if (name in arrayOf("aqdtv", "ck", "hbsy")) {
+        return if (name in arrayOf("aqdtv", "ck", "hbsy", "langyou", "langyouone")) {
             1
         } else {
             //不需要合并的
@@ -129,7 +130,7 @@ class AAAUtilTest {
             //8把去重复的数据保存到文件中
             println("去重复后: " + list.size)
             for (videoUrlData in list) {
-                videoUrlData.setvUrl(videoUrlData.getvUrl().replace("\\/","/"))
+                videoUrlData.setvUrl(videoUrlData.getvUrl().replace("\\/", "/"))
             }
             if (isLinux) {
                 KtStringUtil.saveAsFileWriter("/home/ccg/" + name + "1.json", GsonBuilder().disableHtmlEscaping().create().toJson(list))
@@ -176,7 +177,7 @@ class AAAUtilTest {
             }
         }
         for (videoUrlData in listDatasOne) {
-            videoUrlData.url=""
+            videoUrlData.url = ""
         }
         println("最终的: " + listDatasOne.size)
         if (isLinux) {
@@ -185,6 +186,7 @@ class AAAUtilTest {
             KtStringUtil.saveAsFileWriter("E:\\" + name + "ok.json", GsonBuilder().disableHtmlEscaping().create().toJson(listDatasOne))
         }
     }
+
 
     /**
      * B2把最终结果分解成几份

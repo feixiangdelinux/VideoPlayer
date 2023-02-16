@@ -23,10 +23,15 @@ interface GitHubService {
     @GET("/21/roomlist.json")
     suspend fun getRoomListData(): RoomBean
 
+    @GET("/21/agentinfo.json")
+    suspend fun getAgentInfo(): MutableList<String>
+
     @GET
     suspend fun getListData(@Url url: String): RoomListBean
+
     @GET
-    suspend  fun getVideoFinalData(@Url url: String): VideoListBean
+    suspend fun getVideoFinalData(@Url url: String): VideoListBean
+
     @GET
     fun downloadApp(@Url fileUrl: String): Call<ResponseBody>
 }

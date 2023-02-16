@@ -77,7 +77,6 @@ class VideoOneActivity : ComponentActivity() {
                 } else {
                     isLoading = true
                 }
-
             }
         }
         if (isLoading) {

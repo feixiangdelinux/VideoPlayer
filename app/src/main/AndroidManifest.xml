@@ -63,6 +63,9 @@
             android:name=".activity.CollectionActivity"
             android:launchMode="singleTask" />
         <activity
+            android:name=".activity.BillActivity"
+            android:launchMode="singleTask" />
+        <activity
             android:name=".activity.VideoPlayActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:launchMode="singleTask"

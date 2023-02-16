@@ -10,5 +10,6 @@ package com.ccg.plat
 class Const {
     companion object {
         var IS_VIP: Boolean = false
+        var stringlist = ArrayList<String>()
     }
 }
