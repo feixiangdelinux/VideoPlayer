@@ -13,3 +13,16 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+.idea
+/.idea/caches/build_file_checksums.ser
+build
+*.jks
+*.keystore
+/app/priguardMapping.txt
+/app/release
+/app/debug
+.log
+*.apk
+*/release
+*/debug

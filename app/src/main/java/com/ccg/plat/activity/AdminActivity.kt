@@ -85,13 +85,11 @@ class AdminActivity : ComponentActivity() {
                         Button(onClick = {
                             if (isVip) {
                                 if (input.trim().isNotEmpty()) {
-                                    Timber.e("aaaaa " + input.trim())
                                     registrationId = input.trim()
                                     MainScope().launch(Dispatchers.IO) {
                                         JpushUtil.testSendPush(errMsg = errMsg, registrationId = input.trim(), alert = "您已开通VIP", title = "充值成功")
                                     }
                                 } else {
-                                    Timber.e("bbb " + input.trim())
                                     Toast.makeText(context, "用户名不能为空", Toast.LENGTH_SHORT).show()
                                 }
                             } else {
