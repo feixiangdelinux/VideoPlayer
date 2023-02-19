@@ -2,10 +2,12 @@ package com.ccg.plat
 
 import com.ccg.plat.entity.VideoBean
 import com.ccg.plat.entity.VideoInfo
+import com.ccg.plat.entity.VideoListBean
 import com.ccg.plat.util.KtStringUtil
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import org.junit.Test
+import java.time.LocalDateTime
 
 /**
  * @author : C4_雍和
@@ -187,51 +189,55 @@ class AAAUtilTest {
         }
     }
 
-
-    /**
-     * B2把最终结果分解成几份
-     */
     @Test
-    fun cleaningDataThree() {
-        //1加载json文件到内存中
-        val fileStr = if (isLinux) {
-            KtStringUtil.getStrInFile("/home/ccg/" + name + "ok.json")
-        } else {
-            KtStringUtil.getStrInFile("E:\\" + name + "ok.json")
-        }
-        val listDatasOne = GsonBuilder().disableHtmlEscaping().create().fromJson<ArrayList<VideoBean>>(fileStr, object : TypeToken<ArrayList<VideoBean>>() {}.type)
-        val videoTag: MutableList<String> = ArrayList()
-        val videoUrl: MutableList<String> = ArrayList()
-        for (i in listDatasOne) {
-            if (!videoTag.contains(i.tags)) {
-                videoTag.add(i.tags)
-            }
-        }
-        for (i in videoTag.indices) {
-            val tempList: MutableList<VideoBean> = ArrayList()
-            for (j in listDatasOne) {
-                if (videoTag[i] == j.tags) {
-                    tempList.add(j)
-                }
-            }
-            val ssss = VideoListBean()
-            ssss.videoTag = videoTag[i]
-            ssss.data = tempList
-            val videoU = if (isLinux) {
-                "/home/ccg/$i.json"
-            } else {
-                "E:\\新建文件夹\\$i.json"
-            }
-            KtStringUtil.saveAsFileWriter(videoU, GsonBuilder().disableHtmlEscaping().create().toJson(ssss))
-            videoUrl.add("https://siyou.nos-eastchina1.126.net/21/$name/$i.json")
-        }
-        val secon = SecondListBean()
-        secon.videoTag = videoTag
-        if (isLinux) {
-            KtStringUtil.saveAsFileWriter("/home/ccg/index.json", GsonBuilder().disableHtmlEscaping().create().toJson(secon))
-        } else {
-            KtStringUtil.saveAsFileWriter("E:\\新建文件夹\\index.json", GsonBuilder().disableHtmlEscaping().create().toJson(secon))
-        }
-        println("完成    $name")
+    fun adfdasf() {
+        val current = System.currentTimeMillis()
+        println("最终的: " + current)
     }
+//    /**
+//     * B2把最终结果分解成几份
+//     */
+//    @Test
+//    fun cleaningDataThree() {
+//        //1加载json文件到内存中
+//        val fileStr = if (isLinux) {
+//            KtStringUtil.getStrInFile("/home/ccg/" + name + "ok.json")
+//        } else {
+//            KtStringUtil.getStrInFile("E:\\" + name + "ok.json")
+//        }
+//        val listDatasOne = GsonBuilder().disableHtmlEscaping().create().fromJson<ArrayList<VideoBean>>(fileStr, object : TypeToken<ArrayList<VideoBean>>() {}.type)
+//        val videoTag: MutableList<String> = ArrayList()
+//        val videoUrl: MutableList<String> = ArrayList()
+//        for (i in listDatasOne) {
+//            if (!videoTag.contains(i.tags)) {
+//                videoTag.add(i.tags)
+//            }
+//        }
+//        for (i in videoTag.indices) {
+//            val tempList: MutableList<VideoBean> = ArrayList()
+//            for (j in listDatasOne) {
+//                if (videoTag[i] == j.tags) {
+//                    tempList.add(j)
+//                }
+//            }
+//            val ssss = VideoListBean()
+//            ssss.videoTag = videoTag[i]
+//            ssss.data = tempList
+//            val videoU = if (isLinux) {
+//                "/home/ccg/$i.json"
+//            } else {
+//                "E:\\新建文件夹\\$i.json"
+//            }
+//            KtStringUtil.saveAsFileWriter(videoU, GsonBuilder().disableHtmlEscaping().create().toJson(ssss))
+//            videoUrl.add("https://siyou.nos-eastchina1.126.net/21/$name/$i.json")
+//        }
+//        val secon = SecondListBean()
+//        secon.videoTag = videoTag
+//        if (isLinux) {
+//            KtStringUtil.saveAsFileWriter("/home/ccg/index.json", GsonBuilder().disableHtmlEscaping().create().toJson(secon))
+//        } else {
+//            KtStringUtil.saveAsFileWriter("E:\\新建文件夹\\index.json", GsonBuilder().disableHtmlEscaping().create().toJson(secon))
+//        }
+//        println("完成    $name")
+//    }
 }

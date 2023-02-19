@@ -1,10 +1,14 @@
 package com.ccg.plat.entity
 
-class AAAA(
-    val id: Int,
-    val name: String,
-    val pUrl: String,
-    val tags: String,
-    val url: String,
-    val vUrl: List<String>
-)
+/**
+ * ScrapyBean
+ * @property name String
+ * @property isMerge Boolean
+ * @property url String
+ * @constructor
+ */
+class AAAA(val name: String,
+    //是否需要合并
+    val isMerge: Boolean,
+    //网址
+    val url: String)

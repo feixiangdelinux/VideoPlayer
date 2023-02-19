@@ -17,7 +17,7 @@ import retrofit2.http.Url
  * date : 2022/10/17 11:56
  */
 interface GitHubService {
-    @GET("/21/update.json")
+    @GET("/1/update.json")
     suspend fun getUpdataInfo(): UpdateBean
 
     @GET("/21/roomlist.json")
@@ -31,7 +31,4 @@ interface GitHubService {
 
     @GET
     suspend fun getVideoFinalData(@Url url: String): VideoListBean
-
-    @GET
-    fun downloadApp(@Url fileUrl: String): Call<ResponseBody>
 }
