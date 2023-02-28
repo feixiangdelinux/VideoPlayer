@@ -1,13 +1,13 @@
 package com.ccg.plat
 
+import com.ccg.plat.entity.RoomBean
+import com.ccg.plat.entity.RoomListBean
 import com.ccg.plat.entity.VideoBean
 import com.ccg.plat.entity.VideoInfo
-import com.ccg.plat.entity.VideoListBean
 import com.ccg.plat.util.KtStringUtil
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import org.junit.Test
-import java.time.LocalDateTime
 
 /**
  * @author : C4_雍和
@@ -25,7 +25,7 @@ class AAAUtilTest {
 //    val name = "aqdtv"
 //    val name = "buzz"
 
-    //    val name = "se"
+    val name = "se"
     val isLinux = false
 
     private fun getVideoType(name: String): Int {
@@ -36,6 +36,16 @@ class AAAUtilTest {
             -1
         }
     }
+
+    /**
+     * 是否需要验证videoUrl是否可以播放
+     * @param name String
+     * @return Boolean
+     */
+    private fun getIsPlay(name: String): Boolean {
+        return name !in arrayOf("se")
+    }
+
 
     /**
      * A完整数据并去重复/home/ccg
@@ -189,55 +199,58 @@ class AAAUtilTest {
         }
     }
 
+
+    /**
+     * B2把最终结果分解成几份
+     */
     @Test
-    fun adfdasf() {
-        val current = System.currentTimeMillis()
-        println("最终的: " + current)
+    fun cleaningDataThree() {
+        //1加载json文件到内存中
+        val fileStr = if (isLinux) {
+            if (getIsPlay(name)) {
+                KtStringUtil.getStrInFile("/home/ccg/" + name + "ok.json")
+            } else {
+                KtStringUtil.getStrInFile("/home/ccg/" + name + "1.json")
+            }
+        } else {
+            if (getIsPlay(name)) {
+                KtStringUtil.getStrInFile("E:\\" + name + "ok.json")
+            } else {
+                KtStringUtil.getStrInFile("E:\\" + name + "1.json")
+            }
+        }
+        val listDatasOne = GsonBuilder().disableHtmlEscaping().create().fromJson<ArrayList<VideoBean>>(fileStr, object : TypeToken<ArrayList<VideoBean>>() {}.type)
+        val videoTag: MutableList<String> = ArrayList()
+        val roomList: MutableList<RoomListBean.Data> = ArrayList()
+        val videoList: MutableList<RoomBean> = ArrayList()
+        for (i in listDatasOne) {
+            if (!videoTag.contains(i.tags)) {
+                videoTag.add(i.tags)
+            }
+        }
+        for (i in videoTag.indices) {
+            roomList.add(RoomListBean.Data(videoTag = videoTag[i], videoUrl = "https://siyou.nos-eastchina1.126.net/1/$name/$i.json"))
+            if (videoList.isNotEmpty()) {
+                videoList.clear()
+            }
+            for (j in listDatasOne) {
+                if (videoTag[i] == j.tags) {
+                    videoList.add(RoomBean(name = j.name, pUrl = j.getpUrl(), tag = j.tags, vUrl = j.getvUrl()))
+                }
+            }
+            val videoU = if (isLinux) {
+                "/home/ccg/$i.json"
+            } else {
+                "E:\\新建文件夹\\$i.json"
+            }
+            KtStringUtil.saveAsFileWriter(videoU, GsonBuilder().disableHtmlEscaping().create().toJson(videoList))
+        }
+        val videoU = if (isLinux) {
+            "/home/ccg/index.json"
+        } else {
+            "E:\\新建文件夹\\index.json"
+        }
+        KtStringUtil.saveAsFileWriter(videoU, GsonBuilder().disableHtmlEscaping().create().toJson(RoomListBean(timeStamp = System.currentTimeMillis(), data = roomList)))
+        println("完成    $name")
     }
-//    /**
-//     * B2把最终结果分解成几份
-//     */
-//    @Test
-//    fun cleaningDataThree() {
-//        //1加载json文件到内存中
-//        val fileStr = if (isLinux) {
-//            KtStringUtil.getStrInFile("/home/ccg/" + name + "ok.json")
-//        } else {
-//            KtStringUtil.getStrInFile("E:\\" + name + "ok.json")
-//        }
-//        val listDatasOne = GsonBuilder().disableHtmlEscaping().create().fromJson<ArrayList<VideoBean>>(fileStr, object : TypeToken<ArrayList<VideoBean>>() {}.type)
-//        val videoTag: MutableList<String> = ArrayList()
-//        val videoUrl: MutableList<String> = ArrayList()
-//        for (i in listDatasOne) {
-//            if (!videoTag.contains(i.tags)) {
-//                videoTag.add(i.tags)
-//            }
-//        }
-//        for (i in videoTag.indices) {
-//            val tempList: MutableList<VideoBean> = ArrayList()
-//            for (j in listDatasOne) {
-//                if (videoTag[i] == j.tags) {
-//                    tempList.add(j)
-//                }
-//            }
-//            val ssss = VideoListBean()
-//            ssss.videoTag = videoTag[i]
-//            ssss.data = tempList
-//            val videoU = if (isLinux) {
-//                "/home/ccg/$i.json"
-//            } else {
-//                "E:\\新建文件夹\\$i.json"
-//            }
-//            KtStringUtil.saveAsFileWriter(videoU, GsonBuilder().disableHtmlEscaping().create().toJson(ssss))
-//            videoUrl.add("https://siyou.nos-eastchina1.126.net/21/$name/$i.json")
-//        }
-//        val secon = SecondListBean()
-//        secon.videoTag = videoTag
-//        if (isLinux) {
-//            KtStringUtil.saveAsFileWriter("/home/ccg/index.json", GsonBuilder().disableHtmlEscaping().create().toJson(secon))
-//        } else {
-//            KtStringUtil.saveAsFileWriter("E:\\新建文件夹\\index.json", GsonBuilder().disableHtmlEscaping().create().toJson(secon))
-//        }
-//        println("完成    $name")
-//    }
 }

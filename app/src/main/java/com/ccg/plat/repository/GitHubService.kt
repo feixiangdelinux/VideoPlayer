@@ -20,5 +20,6 @@ interface GitHubService {
 
     @GET("/21/agentinfo.json")
     suspend fun getAgentInfo(): MutableList<String>
-
+    @GET
+    suspend fun getVideoFinalData(@Url url: String): VideoListBean
 }

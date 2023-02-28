@@ -1,6 +1,5 @@
 package com.ccg.plat.entity
 
-data class RoomListBean(
-    val videoTag: List<String>,
-    val videoUrl: List<String>
-)
+data class RoomListBean(val timeStamp: Long, val `data`: MutableList<Data>) {
+    data class Data(val videoTag: String, val videoUrl: String)
+}
