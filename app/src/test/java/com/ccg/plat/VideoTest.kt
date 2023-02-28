@@ -134,7 +134,6 @@ class VideoTest {
                 KtStringUtil.saveAsFileWriter("${scrapyData.folder}${scrapyData.name}1.json", GsonBuilder().disableHtmlEscaping().create().toJson(listOne))
 
             }
-
             val endTime = System.currentTimeMillis()
             println("耗时：  " + (endTime - startTime) / 1000 / 60 + " 分钟")
         }

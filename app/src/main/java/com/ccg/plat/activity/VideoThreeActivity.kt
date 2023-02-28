@@ -62,15 +62,15 @@ class VideoThreeActivity : ComponentActivity() {
             val json = kv.decodeString(url)
             if (json.isNullOrEmpty()) {
                 val data = retrofit.getVideoFinalData(url)
-                if (data.data.isNotEmpty()) {
-                    if (listName.isNotEmpty()) {
-                        listName.clear()
-                    }
-                    listName.addAll(data.data)
-                    isLoading = false
-                } else {
-                    isLoading = true
-                }
+//                if (data.data.isNotEmpty()) {
+//                    if (listName.isNotEmpty()) {
+//                        listName.clear()
+//                    }
+//                    listName.addAll(data.data)
+//                    isLoading = false
+//                } else {
+//                    isLoading = true
+//                }
                 kv.encode(url, GsonBuilder().create().toJson(data))
             } else {
                 val saveData = GsonBuilder().create().fromJson(json, VideoListBean::class.java)

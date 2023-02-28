@@ -4,24 +4,20 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ccg.plat.entity.RoomBean
+import com.ccg.plat.entity.RoomInfoBean
 import com.ccg.plat.repository.GitHubService
 import com.ccg.plat.ui.theme.VideoPlayerTheme
-import com.google.gson.GsonBuilder
-import com.tencent.mmkv.MMKV
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -50,33 +46,17 @@ class VideoOneActivity : ComponentActivity() {
     @Composable
     fun VideoListUI() {
         var isLoading by remember { mutableStateOf(true) }
-        val downloadUrl = remember { mutableStateListOf<RoomBean.Data>() }
+        val downloadUrl = remember { mutableStateListOf<RoomInfoBean>() }
         LaunchedEffect(Unit) {
-            val kv = MMKV.defaultMMKV()
-            val json = kv.decodeString("VideoOneActivity")
-            if (json.isNullOrEmpty()) {
-                val data = retrofit.getRoomListData()
-                if (data.data.isNotEmpty()) {
-                    if (downloadUrl.isNotEmpty()) {
-                        downloadUrl.clear()
-                    }
-                    downloadUrl.addAll(data.data)
-                    isLoading = false
-                } else {
-                    isLoading = true
+            val data = retrofit.getRoomListData()
+            if (data.isNotEmpty()) {
+                if (downloadUrl.isNotEmpty()) {
+                    downloadUrl.clear()
                 }
-                kv.encode("VideoOneActivity", GsonBuilder().create().toJson(data))
+                downloadUrl.addAll(data)
+                isLoading = false
             } else {
-                val saveData = GsonBuilder().create().fromJson(json, RoomBean::class.java)
-                if (saveData.data.isNotEmpty()) {
-                    if (downloadUrl.isNotEmpty()) {
-                        downloadUrl.clear()
-                    }
-                    downloadUrl.addAll(saveData.data)
-                    isLoading = false
-                } else {
-                    isLoading = true
-                }
+                isLoading = true
             }
         }
         if (isLoading) {
@@ -98,14 +78,12 @@ class VideoOneActivity : ComponentActivity() {
                             intent.putExtra("url", it.roomUrl)
                             startActivity(intent)
                         }) {
-                        Text(text = it.roomName,modifier = Modifier.padding(start = 20.dp,top= 15.dp,bottom= 15.dp),fontSize = 20.sp)
+                        Text(text = it.roomName, modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 20.sp)
                         Divider(thickness = 1.dp)
                     }
                 }
             }
         }
-
-
     }
 }
 

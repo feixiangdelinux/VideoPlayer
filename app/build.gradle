@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace 'com.ccg.plat'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.ccg.plat"
@@ -88,7 +88,4 @@ dependencies {
     implementation 'cn.jpush.api:jiguang-common:1.2.2'
     implementation 'com.arialyy.aria:core:3.8.5'
     kapt 'com.arialyy.aria:compiler:3.8.5'
-//    implementation "androidx.room:room-runtime:2.5.0"
-//    kapt "androidx.room:room-compiler:2.5.0"
-
 }

@@ -1,6 +1,5 @@
 package com.ccg.plat
 
-import com.ccg.plat.entity.FinalVideoBean
 import com.ccg.plat.entity.RoomInfoBean
 import com.ccg.plat.entity.ScrapyBean
 import com.ccg.plat.entity.VideoBean
