@@ -18,7 +18,7 @@ interface GitHubService {
     @GET("/1/roomlist.json")
     suspend fun getRoomListData(): MutableList<RoomInfoBean>
 
-    @GET("/21/agentinfo.json")
+    @GET("/1/agentinfo.json")
     suspend fun getAgentInfo(): MutableList<String>
 
     @GET

@@ -21,6 +21,8 @@ import com.ccg.plat.Const
 import com.ccg.plat.entity.RoomBean
 import com.ccg.plat.repository.GitHubService
 import com.ccg.plat.ui.theme.VideoPlayerTheme
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.tencent.mmkv.MMKV
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -58,15 +60,30 @@ class VideoThreeActivity : ComponentActivity() {
         var isLoading by remember { mutableStateOf(true) }
         val listName = remember { mutableStateListOf<RoomBean>() }
         LaunchedEffect(Unit) {
-            val data = retrofit.getVideoFinalData(url)
-            if (data.isNotEmpty()) {
-                if (listName.isNotEmpty()) {
-                    listName.clear()
+            val json = kv.decodeString(url)
+            if (json.isNullOrEmpty()) {
+                val data = retrofit.getVideoFinalData(url)
+                if (data.isNotEmpty()) {
+                    if (listName.isNotEmpty()) {
+                        listName.clear()
+                    }
+                    listName.addAll(data)
+                    isLoading = false
+                    kv.encode(url, GsonBuilder().create().toJson(data))
+                } else {
+                    isLoading = true
                 }
-                listName.addAll(data)
-                isLoading = false
-            } else {
-                isLoading = true
+            }else{
+                val saveData = GsonBuilder().create().fromJson<MutableList<RoomBean>>(json, object : TypeToken<MutableList<RoomBean>>() {}.type)
+                if (saveData.isNotEmpty()) {
+                    if (listName.isNotEmpty()) {
+                        listName.clear()
+                    }
+                    listName.addAll(saveData)
+                    isLoading = false
+                } else {
+                    isLoading = true
+                }
             }
         }
         if (isLoading) {
