@@ -18,10 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.ccg.plat.Const
-import com.ccg.plat.entity.VideoListBean
+import com.ccg.plat.entity.RoomBean
 import com.ccg.plat.repository.GitHubService
 import com.ccg.plat.ui.theme.VideoPlayerTheme
-import com.google.gson.GsonBuilder
 import com.tencent.mmkv.MMKV
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -57,32 +56,17 @@ class VideoThreeActivity : ComponentActivity() {
     @Composable
     fun VideoListUI(url: String) {
         var isLoading by remember { mutableStateOf(true) }
-        val listName = remember { mutableStateListOf<VideoListBean.Data>() }
+        val listName = remember { mutableStateListOf<RoomBean>() }
         LaunchedEffect(Unit) {
-            val json = kv.decodeString(url)
-            if (json.isNullOrEmpty()) {
-                val data = retrofit.getVideoFinalData(url)
-//                if (data.data.isNotEmpty()) {
-//                    if (listName.isNotEmpty()) {
-//                        listName.clear()
-//                    }
-//                    listName.addAll(data.data)
-//                    isLoading = false
-//                } else {
-//                    isLoading = true
-//                }
-                kv.encode(url, GsonBuilder().create().toJson(data))
-            } else {
-                val saveData = GsonBuilder().create().fromJson(json, VideoListBean::class.java)
-                if (saveData.data.isNotEmpty()) {
-                    if (listName.isNotEmpty()) {
-                        listName.clear()
-                    }
-                    listName.addAll(saveData.data)
-                    isLoading = false
-                } else {
-                    isLoading = true
+            val data = retrofit.getVideoFinalData(url)
+            if (data.isNotEmpty()) {
+                if (listName.isNotEmpty()) {
+                    listName.clear()
                 }
+                listName.addAll(data)
+                isLoading = false
+            } else {
+                isLoading = true
             }
         }
         if (isLoading) {
@@ -95,7 +79,7 @@ class VideoThreeActivity : ComponentActivity() {
             }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                item{
+                item {
                     Text(text = "电影暂停就会显示收藏按钮,随机播放按钮\n", modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 15.sp)
                 }
 
@@ -127,7 +111,9 @@ class VideoThreeActivity : ComponentActivity() {
                                         startActivity(intent)
                                     } else {
                                         //提示不充钱每天智能看10次
-                                        Toast.makeText(context, "不充钱每天只能看10次", Toast.LENGTH_LONG).show()
+                                        Toast
+                                            .makeText(context, "不充钱每天只能看10次", Toast.LENGTH_LONG)
+                                            .show()
                                     }
                                 }
                             }, verticalAlignment = Alignment.CenterVertically) {

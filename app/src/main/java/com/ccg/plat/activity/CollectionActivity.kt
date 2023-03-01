@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.ccg.plat.Const
-import com.ccg.plat.entity.VideoListBean
+import com.ccg.plat.entity.RoomBean
 import com.ccg.plat.ui.theme.VideoPlayerTheme
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -36,14 +36,14 @@ import com.tencent.mmkv.MMKV
 class CollectionActivity : ComponentActivity() {
     val context = this
     val kv = MMKV.defaultMMKV()
-    val collectionData by lazy { mutableStateListOf<VideoListBean.Data>() }
+    val collectionData by lazy { mutableStateListOf<RoomBean>() }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val json = kv.decodeString("collection_key")
             if (json.isNullOrEmpty()) {
             } else {
-                val saveData = GsonBuilder().create().fromJson<MutableList<VideoListBean.Data>>(json, object : TypeToken<MutableList<VideoListBean.Data>>() {}.type)
+                val saveData = GsonBuilder().create().fromJson<MutableList<RoomBean>>(json, object : TypeToken<MutableList<RoomBean>>() {}.type)
                 collectionData.addAll(saveData)
             }
             VideoPlayerTheme {

@@ -1,7 +1,6 @@
 package com.ccg.plat.activity
 
 import android.app.Activity
-import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
@@ -13,7 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.blankj.utilcode.util.ScreenUtils
 import com.ccg.plat.Const
 import com.ccg.plat.R
-import com.ccg.plat.entity.VideoListBean
+import com.ccg.plat.entity.RoomBean
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.shuyu.gsyvideoplayer.GSYVideoManager
@@ -41,10 +40,10 @@ class SimplePlayerActivity : Activity() {
     val kv = MMKV.defaultMMKV()
 
     //收藏列表数据
-    var collectionData: MutableList<VideoListBean.Data> = ArrayList()
+    var collectionData: MutableList<RoomBean> = ArrayList()
 
     //播放列表数据
-    var playData: MutableList<VideoListBean.Data> = ArrayList()
+    var playData: MutableList<RoomBean> = ArrayList()
     var index = 0
 
     /**
@@ -62,12 +61,12 @@ class SimplePlayerActivity : Activity() {
         val json = kv.decodeString("collection_key")
         if (json.isNullOrEmpty()) {
         } else {
-            collectionData.addAll(GsonBuilder().create().fromJson<MutableList<VideoListBean.Data>>(json, object : TypeToken<MutableList<VideoListBean.Data>>() {}.type))
+            collectionData.addAll(GsonBuilder().create().fromJson<MutableList<RoomBean>>(json, object : TypeToken<MutableList<RoomBean>>() {}.type))
         }
         if (tag == 0) {
             intent.getStringExtra("key")?.run {
-                val saveData = GsonBuilder().create().fromJson(kv.decodeString(this), VideoListBean::class.java)
-                playData.addAll(saveData.data)
+                val saveData = GsonBuilder().create().fromJson<MutableList<RoomBean>>(kv.decodeString(this), object : TypeToken<MutableList<RoomBean>>() {}.type)
+                playData.addAll(saveData)
             }
         } else if (tag == 1) {
             playData.addAll(collectionData)
@@ -126,7 +125,7 @@ class SimplePlayerActivity : Activity() {
         }
     }
 
-    fun getVideoData(): VideoListBean.Data {
+    fun getVideoData(): RoomBean {
         return playData[index]
     }
 
@@ -162,24 +161,3 @@ class SimplePlayerActivity : Activity() {
         return super.onKeyDown(keyCode, event)
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

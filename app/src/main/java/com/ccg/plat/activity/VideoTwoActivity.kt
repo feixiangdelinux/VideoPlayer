@@ -2,7 +2,6 @@ package com.ccg.plat.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Environment
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -14,22 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.arialyy.annotations.Download
-import com.blankj.utilcode.util.FileIOUtils
-import com.blankj.utilcode.util.FileUtils
 import com.ccg.plat.entity.RoomListBean
 import com.ccg.plat.repository.GitHubService
 import com.ccg.plat.ui.theme.VideoPlayerTheme
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
-import com.tencent.mmkv.MMKV
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import timber.log.Timber
 
 
 /**
@@ -61,24 +49,14 @@ class VideoTwoActivity : ComponentActivity() {
     @Composable
     fun VideoListUI(url: String) {
         var isLoading by remember { mutableStateOf(true) }
-        val listName = remember { mutableStateListOf<String>() }
-        val listUrl = remember { mutableStateListOf<String>() }
+        val listName = remember { mutableStateListOf<RoomListBean.Data>() }
         LaunchedEffect(Unit) {
             val data = retrofit.getListData(url)
-            if (data.videoTag.isNotEmpty()) {
-                if (listName.isNotEmpty()) {
-                    listName.clear()
-                }
-                listName.addAll(data.videoTag)
+            if (data.data.isNotEmpty()) {
                 isLoading = false
+                listName.addAll(data.data)
             } else {
                 isLoading = true
-            }
-            if (data.videoUrl.isNotEmpty()) {
-                if (listUrl.isNotEmpty()) {
-                    listUrl.clear()
-                }
-                listUrl.addAll(data.videoUrl)
             }
         }
         if (isLoading) {
@@ -97,10 +75,10 @@ class VideoTwoActivity : ComponentActivity() {
                         .wrapContentHeight()
                         .clickable {
                             val intent = Intent(context, VideoThreeActivity::class.java)
-                            intent.putExtra("url", listUrl[it])
+                            intent.putExtra("url", listName[it].videoUrl)
                             startActivity(intent)
                         }) {
-                        Text(text = listName[it],modifier = Modifier.padding(start = 20.dp,top= 15.dp,bottom= 15.dp),fontSize = 20.sp)
+                        Text(text = listName[it].videoTag, modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 20.sp)
                         Divider(thickness = 1.dp)
                     }
                 }
