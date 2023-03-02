@@ -120,7 +120,7 @@ class VideoThreeActivity : ComponentActivity() {
                         .wrapContentHeight()
                         .padding(horizontal = 80.dp))
                     Spacer(modifier = Modifier.height(10.dp))
-                    Text("加载中")
+                    Text("加载中...")
                 }
             }
 
