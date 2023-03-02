@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arialyy.annotations.Download
 import com.arialyy.aria.core.Aria
+import com.arialyy.aria.core.task.DownloadTask
 import com.blankj.utilcode.util.*
 import com.blankj.utilcode.util.PermissionUtils.FullCallback
 import com.ccg.plat.Const
@@ -40,7 +41,7 @@ class SplashActivity : ComponentActivity() {
     var mTaskId = 0L
     var downloadProgress = mutableStateOf(0)
     var downloadUrl = mutableStateOf("")
-    var filePath = ""
+    var apkFile = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Aria.download(context).register()
@@ -58,6 +59,10 @@ class SplashActivity : ComponentActivity() {
     fun SplashUI() {
         var showProgress by remember { mutableStateOf(false) }
         LaunchedEffect(Unit) {
+            getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.let {
+                Const.filePath = it.path
+                apkFile = Const.filePath + "/xiaohuangren.apk"
+            }
             val data = retrofit.getUpdataInfo()
             if (data.version > AppUtils.getAppVersionCode()) {
                 downloadUrl.value = data.apkUrl
@@ -96,15 +101,19 @@ class SplashActivity : ComponentActivity() {
         }
     }
 
-
+    /**
+     * 检查用户是否授权了存储权限
+     * @param downloadUrl String
+     */
     private fun checkPermission(downloadUrl: String) {
         if (PermissionUtils.isGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            downloadAppTwo(downloadUrl)
+            downloadApp(downloadUrl)
         } else {
             PermissionUtils.permission(Manifest.permission.WRITE_EXTERNAL_STORAGE).callback(object : FullCallback {
                 override fun onGranted(granted: List<String>) {
-                    downloadAppTwo(downloadUrl)
+                    downloadApp(downloadUrl)
                 }
+
                 override fun onDenied(deniedForever: List<String>, denied: List<String>) {
                     ToastUtils.showShort("请开启权限")
                 }
@@ -112,32 +121,41 @@ class SplashActivity : ComponentActivity() {
         }
     }
 
-    private fun downloadAppTwo(apkUrl: String) {
-        getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.let {
-            filePath = it.path + "/xiaohuangren.apk"
-            if (FileUtils.isFileExists(filePath)) {
-                FileUtils.delete(filePath)
-            }
-            mTaskId = Aria.download(context).load(apkUrl).setFilePath(filePath).create()
+    /**
+     * 下载app
+     * @param apkUrl String
+     */
+    private fun downloadApp(apkUrl: String) {
+        if (FileUtils.isFileExists(apkFile)) {
+            FileUtils.delete(apkFile)
         }
+        mTaskId = Aria.download(context).load(apkUrl).setFilePath(apkFile).create()
+
     }
 
+    /**
+     * 下载中
+     * @param task DownloadTask
+     */
     @Download.onTaskRunning
-    fun running(task: com.arialyy.aria.core.task.DownloadTask) {
+    fun running(task: DownloadTask) {
         val len = task.fileSize
         if (len != 0L) {
             downloadProgress.value = task.percent
         }
     }
 
+    /**
+     * 下载结束
+     * @param task DownloadTask
+     */
     @Download.onTaskComplete
-    fun taskComplete(task: com.arialyy.aria.core.task.DownloadTask) {
+    fun taskComplete(task: DownloadTask) {
         downloadProgress.value = 100
-        title.value = title.value + "下载完成. 安装文件在\n$filePath\n如果不能自动安装请在文件管理器中找到对应安装包手动安装"
+        title.value = title.value + "下载完成. 安装文件在\n$apkFile\n如果不能自动安装请在文件管理器中找到对应安装包手动安装"
         Aria.download(this).load(mTaskId).cancel(false)
-        AppUtils.installApp(filePath)
+        AppUtils.installApp(apkFile)
     }
-
 
     override fun onDestroy() {
         super.onDestroy()

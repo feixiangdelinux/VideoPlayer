@@ -1,5 +1,7 @@
 package com.ccg.plat
 
+import com.ccg.plat.entity.RoomBean
+
 /**
  * @author : C4_雍和
  * 描述 :
@@ -10,6 +12,14 @@ package com.ccg.plat
 class Const {
     companion object {
         var IS_VIP: Boolean = false
-        var stringlist = ArrayList<String>()
+        /**
+         * 文件下载路径
+         */
+        var filePath: String= ""
+
+        /**
+         * 播放列表数据
+         */
+        var finalVideoList: MutableList<RoomBean>  =ArrayList()
     }
 }

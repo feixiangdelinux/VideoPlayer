@@ -43,8 +43,11 @@ class CollectionActivity : ComponentActivity() {
             val json = kv.decodeString("collection_key")
             if (json.isNullOrEmpty()) {
             } else {
-                val saveData = GsonBuilder().create().fromJson<MutableList<RoomBean>>(json, object : TypeToken<MutableList<RoomBean>>() {}.type)
-                collectionData.addAll(saveData)
+                if (Const.finalVideoList.isNotEmpty()) {
+                    Const.finalVideoList.clear()
+                }
+                Const.finalVideoList = GsonBuilder().create().fromJson<MutableList<RoomBean>>(json, object : TypeToken<MutableList<RoomBean>>() {}.type)
+                collectionData.addAll(Const.finalVideoList)
             }
             VideoPlayerTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
@@ -65,7 +68,6 @@ class CollectionActivity : ComponentActivity() {
                                             .wrapContentHeight()
                                             .clickable {
                                                 val intent = Intent(context, SimplePlayerActivity::class.java)
-                                                intent.putExtra("tag", 1)
                                                 intent.putExtra("index", it)
                                                 startActivity(intent)
                                             }, verticalAlignment = Alignment.CenterVertically) {
@@ -92,6 +94,13 @@ class CollectionActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (Const.finalVideoList.isNotEmpty()) {
+            Const.finalVideoList.clear()
         }
     }
 }

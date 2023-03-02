@@ -1,8 +1,11 @@
 package com.ccg.plat.util
 
+import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import com.blankj.utilcode.util.PermissionUtils
+import com.blankj.utilcode.util.ToastUtils
 
 /**
  * @author : C4_雍和
@@ -21,3 +24,4 @@ fun Context.copyStr(str: String) {
     val clipboardManagerOne = this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     clipboardManagerOne.setPrimaryClip(ClipData.newPlainText(null, str))
 }
+

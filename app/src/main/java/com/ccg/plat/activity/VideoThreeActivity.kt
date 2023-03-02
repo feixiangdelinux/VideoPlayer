@@ -10,22 +10,29 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.arialyy.annotations.Download
+import com.arialyy.aria.core.Aria
+import com.arialyy.aria.core.task.DownloadTask
+import com.blankj.utilcode.util.EncryptUtils
+import com.blankj.utilcode.util.FileIOUtils
+import com.blankj.utilcode.util.FileUtils
 import com.ccg.plat.Const
 import com.ccg.plat.entity.RoomBean
-import com.ccg.plat.repository.GitHubService
 import com.ccg.plat.ui.theme.VideoPlayerTheme
+import com.ccg.plat.util.PermissionUtil
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.tencent.mmkv.MMKV
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 /**
  * @author : C4_雍和
@@ -35,15 +42,24 @@ import retrofit2.converter.gson.GsonConverterFactory
  * date : 2022/10/17 16:26
  */
 class VideoThreeActivity : ComponentActivity() {
-    val context = this
+    private val context = this
+    private val kv = MMKV.defaultMMKV()
+    private var playNumber = 0
     private var url = ""
-    private val retrofit = Retrofit.Builder().baseUrl("https://siyou.nos-eastchina1.126.net/").addConverterFactory(GsonConverterFactory.create()).build().create(GitHubService::class.java)
-    val kv = MMKV.defaultMMKV()
-    var playNumber = 0
+    private var state = 0
+    var downloadProgress = mutableStateOf(0)
+    var mTaskId = 0L
+    var jsonFile = ""
+    var isLoading = mutableStateOf(true)
+    val listName = mutableStateListOf<RoomBean>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Aria.download(context).register()
         intent.getStringExtra("url")?.run {
             url = this
+        }
+        intent.getIntExtra("state", 0).run {
+            state = this
         }
         playNumber = kv.decodeInt("playNumber")
         setContent {
@@ -57,49 +73,42 @@ class VideoThreeActivity : ComponentActivity() {
 
     @Composable
     fun VideoListUI(url: String) {
-        var isLoading by remember { mutableStateOf(true) }
-        val listName = remember { mutableStateListOf<RoomBean>() }
         LaunchedEffect(Unit) {
+            jsonFile = Const.filePath + "/${EncryptUtils.encryptMD5ToString(url)}"
             val json = kv.decodeString(url)
-            if (json.isNullOrEmpty()) {
-                val data = retrofit.getVideoFinalData(url)
-                if (data.isNotEmpty()) {
-                    if (listName.isNotEmpty()) {
-                        listName.clear()
-                    }
-                    listName.addAll(data)
-                    isLoading = false
-                    kv.encode(url, GsonBuilder().create().toJson(data))
-                } else {
-                    isLoading = true
+            val tiaojianOne = state == 0
+            val tiaojianTwo = state == 2
+            val tiaojianThree = json.isNullOrEmpty()
+            if (tiaojianOne || tiaojianTwo || tiaojianThree) {
+                //需要重新下载
+                if (FileUtils.isFileExists(jsonFile)) {
+                    FileUtils.delete(jsonFile)
                 }
-            }else{
-                val saveData = GsonBuilder().create().fromJson<MutableList<RoomBean>>(json, object : TypeToken<MutableList<RoomBean>>() {}.type)
-                if (saveData.isNotEmpty()) {
-                    if (listName.isNotEmpty()) {
-                        listName.clear()
-                    }
-                    listName.addAll(saveData)
-                    isLoading = false
-                } else {
-                    isLoading = true
+                PermissionUtil.checkPermission {
+                    mTaskId = Aria.download(context).load(url).setFilePath(jsonFile).create()
                 }
+            } else {
+                //加载本地缓存的数据
+                loadDataForStorage(json!!)
             }
         }
-        if (isLoading) {
+        if (isLoading.value) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(modifier = Modifier.wrapContentSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    CircularProgressIndicator()
+                    LinearProgressIndicator(progress = downloadProgress.value.toFloat() / 100, modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(horizontal = 80.dp))
                     Spacer(modifier = Modifier.height(10.dp))
                     Text("加载中")
                 }
             }
+
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
                 item {
                     Text(text = "电影暂停就会显示收藏按钮,随机播放按钮\n", modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 15.sp)
                 }
-
                 items(count = listName.size) {
                     Column(modifier = Modifier
                         .fillMaxWidth()
@@ -111,8 +120,6 @@ class VideoThreeActivity : ComponentActivity() {
                             .clickable {
                                 if (Const.IS_VIP) {
                                     val intent = Intent(context, SimplePlayerActivity::class.java)
-                                    intent.putExtra("tag", 0)
-                                    intent.putExtra("key", url)
                                     intent.putExtra("index", it)
                                     startActivity(intent)
 
@@ -122,8 +129,6 @@ class VideoThreeActivity : ComponentActivity() {
                                         playNumber += 1
                                         kv.encode("playNumber", playNumber)
                                         val intent = Intent(context, SimplePlayerActivity::class.java)
-                                        intent.putExtra("tag", 0)
-                                        intent.putExtra("key", url)
                                         intent.putExtra("index", it)
                                         startActivity(intent)
                                     } else {
@@ -151,6 +156,77 @@ class VideoThreeActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    /**
+     * 从本地json文件中加载数据
+     */
+    private fun loadDataForStorage(filePash: String) {
+        var json = FileIOUtils.readFile2String(filePash)
+        if (Const.finalVideoList.isNotEmpty()) {
+            Const.finalVideoList.clear()
+        }
+        Const.finalVideoList = GsonBuilder().create().fromJson<MutableList<RoomBean>>(json, object : TypeToken<MutableList<RoomBean>>() {}.type)
+        json = ""
+        if (Const.finalVideoList.isNotEmpty()) {
+            if (listName.isNotEmpty()) {
+                listName.clear()
+            }
+            listName.addAll(Const.finalVideoList)
+            isLoading.value = false
+        } else {
+            isLoading.value = true
+        }
+    }
+
+    /**
+     * 下载中
+     * @param task DownloadTask
+     */
+    @Download.onTaskRunning
+    fun running(task: DownloadTask) {
+        val len = task.fileSize
+        if (len != 0L) {
+            downloadProgress.value = task.percent
+        }
+    }
+
+    /**
+     * 下载结束
+     * @param task DownloadTask
+     */
+    @Download.onTaskComplete
+    fun taskComplete(task: DownloadTask) {
+        downloadProgress.value = 100
+        Aria.download(this).load(mTaskId).cancel(false)
+        kv.encode(url, jsonFile)
+        loadDataForStorage(jsonFile)
+    }
+
+    @Download.onTaskFail
+    fun taskFail(task: DownloadTask?) {
+        if (FileUtils.isFileExists(jsonFile)) {
+            FileUtils.delete(jsonFile)
+        }
+        jsonFile = jsonFile.substring(0, jsonFile.length - 1)
+        mTaskId = Aria.download(context).load(url).setFilePath(jsonFile).create()
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (Const.finalVideoList.isNotEmpty()) {
+            Const.finalVideoList.clear()
+        }
+        url = ""
+        state = 0
+        mTaskId = 0L
+        jsonFile = ""
+        if (listName.isNotEmpty()) {
+            listName.clear()
+        }
+        Aria.download(this).load(mTaskId).cancel(true)
+        Aria.download(context).unRegister()
     }
 }
 

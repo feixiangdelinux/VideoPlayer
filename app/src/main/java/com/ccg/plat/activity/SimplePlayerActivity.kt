@@ -38,39 +38,17 @@ class SimplePlayerActivity : Activity() {
     private lateinit var collectionButton: Button
     private lateinit var orientationUtils: OrientationUtils
     val kv = MMKV.defaultMMKV()
-
-    //收藏列表数据
-    var collectionData: MutableList<RoomBean> = ArrayList()
-
     //播放列表数据
     var playData: MutableList<RoomBean> = ArrayList()
     var index = 0
 
-    /**
-     * 0是播放视频列表
-     * 1是播放收藏列表
-     */
-    var tag = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val ccc = WindowCompat.getInsetsController(window, window.decorView)
         ccc.hide(WindowInsetsCompat.Type.statusBars())
         setContentView(R.layout.activity_simple_play)
-        tag = intent.getIntExtra("tag", 0)
         index = intent.getIntExtra("index", 0)
-        val json = kv.decodeString("collection_key")
-        if (json.isNullOrEmpty()) {
-        } else {
-            collectionData.addAll(GsonBuilder().create().fromJson<MutableList<RoomBean>>(json, object : TypeToken<MutableList<RoomBean>>() {}.type))
-        }
-        if (tag == 0) {
-            intent.getStringExtra("key")?.run {
-                val saveData = GsonBuilder().create().fromJson<MutableList<RoomBean>>(kv.decodeString(this), object : TypeToken<MutableList<RoomBean>>() {}.type)
-                playData.addAll(saveData)
-            }
-        } else if (tag == 1) {
-            playData.addAll(collectionData)
-        }
+        playData.addAll(Const.finalVideoList)
         init()
     }
 
@@ -106,9 +84,9 @@ class SimplePlayerActivity : Activity() {
         //收藏按钮的点击事件
         collectionButton.setOnClickListener {
             if (Const.IS_VIP) {
-                if (!collectionData.contains(getVideoData())) {
-                    collectionData.add(getVideoData())
-                    kv.encode("collection_key", GsonBuilder().create().toJson(collectionData))
+                if (!playData.contains(getVideoData())) {
+                    playData.add(getVideoData())
+                    kv.encode("collection_key", GsonBuilder().create().toJson(playData))
                 }
                 Toast.makeText(context, "收藏成功", Toast.LENGTH_SHORT).show()
             } else {
