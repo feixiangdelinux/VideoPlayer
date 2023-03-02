@@ -21,5 +21,9 @@ class Const {
          * 播放列表数据
          */
         var finalVideoList: MutableList<RoomBean>  =ArrayList()
+        /**
+         * 播放列表数据
+         */
+        var updateUrlList: MutableList<String>  =ArrayList()
     }
 }

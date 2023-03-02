@@ -28,15 +28,15 @@ import com.tencent.mmkv.MMKV
 
 /**
  * @author : C4_雍和
- * 描述 :
+ * 描述 :收藏页面
  * 主要功能 :
  * 维护人员 : C4_雍和
  * date : 2023/2/9 12:44
  */
 class CollectionActivity : ComponentActivity() {
-    val context = this
-    val kv = MMKV.defaultMMKV()
-    val collectionData by lazy { mutableStateListOf<RoomBean>() }
+    private val context = this
+    private val kv = MMKV.defaultMMKV()
+    private val collectionData by lazy { mutableStateListOf<RoomBean>() }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -67,7 +67,8 @@ class CollectionActivity : ComponentActivity() {
                                             .fillMaxWidth()
                                             .wrapContentHeight()
                                             .clickable {
-                                                val intent = Intent(context, SimplePlayerActivity::class.java)
+                                                val intent = Intent(context, VideoPlayerActivity::class.java)
+                                                intent.putExtra("tag", 2)
                                                 intent.putExtra("index", it)
                                                 startActivity(intent)
                                             }, verticalAlignment = Alignment.CenterVertically) {
@@ -94,6 +95,16 @@ class CollectionActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        if (Const.finalVideoList.size != collectionData.size) {
+            if (collectionData.isNotEmpty()) {
+                collectionData.clear()
+            }
+            collectionData.addAll(Const.finalVideoList)
         }
     }
 

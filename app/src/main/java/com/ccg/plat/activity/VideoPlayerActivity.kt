@@ -14,6 +14,7 @@ import com.ccg.plat.Const
 import com.ccg.plat.R
 import com.ccg.plat.entity.RoomBean
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.shuyu.gsyvideoplayer.GSYVideoManager
 import com.shuyu.gsyvideoplayer.player.PlayerFactory
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
@@ -24,29 +25,40 @@ import tv.danmaku.ijk.media.exo2.Exo2PlayerManager
 
 /**
  * @author : C4_雍和
- * 描述 :
+ * 描述 :视频播放页面
  * 主要功能 :
  * 维护人员 : C4_雍和
  * date : 2023/1/31 11:03
  */
-class SimplePlayerActivity : Activity() {
+class VideoPlayerActivity : Activity() {
     val context = this
     private lateinit var videoPlayer: StandardGSYVideoPlayer
     private lateinit var funLl: LinearLayout
     private lateinit var randomButton: Button
     private lateinit var collectionButton: Button
+    private lateinit var deleteCollectionButton: Button
     private lateinit var orientationUtils: OrientationUtils
     val kv = MMKV.defaultMMKV()
+
+    //收藏列表数据
+    var collectionData: MutableList<RoomBean> = ArrayList()
+
     //播放列表数据
     var playData: MutableList<RoomBean> = ArrayList()
     var index = 0
 
+    /**
+     * 0是播放视频列表
+     * 1是播放收藏列表
+     */
+    var tag = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val ccc = WindowCompat.getInsetsController(window, window.decorView)
         ccc.hide(WindowInsetsCompat.Type.statusBars())
         setContentView(R.layout.activity_simple_play)
         index = intent.getIntExtra("index", 0)
+        tag = intent.getIntExtra("tag", 0)
         playData.addAll(Const.finalVideoList)
         init()
     }
@@ -56,6 +68,19 @@ class SimplePlayerActivity : Activity() {
         funLl = findViewById<LinearLayout>(R.id.fun_ll)
         randomButton = findViewById<Button>(R.id.random_video_btn)
         collectionButton = findViewById<Button>(R.id.collection_video_btn)
+        deleteCollectionButton = findViewById<Button>(R.id.collection_delete_btn)
+        if (tag == 1) {
+            collectionButton.visibility = View.VISIBLE
+            deleteCollectionButton.visibility = View.GONE
+            val json = kv.decodeString("collection_key")
+            if (json.isNullOrEmpty()) {
+            } else {
+                collectionData.addAll(GsonBuilder().create().fromJson<MutableList<RoomBean>>(json, object : TypeToken<MutableList<RoomBean>>() {}.type))
+            }
+        } else if (tag == 2) {
+            collectionButton.visibility = View.GONE
+            deleteCollectionButton.visibility = View.VISIBLE
+        }
         videoPlayer.setUp(getVideoData().vUrl, true, getVideoData().name)
         PlayerFactory.setPlayManager(Exo2PlayerManager::class.java)
         videoPlayer.titleTextView.visibility = View.VISIBLE
@@ -83,15 +108,20 @@ class SimplePlayerActivity : Activity() {
         //收藏按钮的点击事件
         collectionButton.setOnClickListener {
             if (Const.IS_VIP) {
-                if (!playData.contains(getVideoData())) {
-                    playData.add(getVideoData())
-                    kv.encode("collection_key", GsonBuilder().create().toJson(playData))
+                if (!collectionData.contains(getVideoData())) {
+                    collectionData.add(getVideoData())
+                    kv.encode("collection_key", GsonBuilder().create().toJson(collectionData))
                 }
                 Toast.makeText(context, "收藏成功", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(context, "你不是VIP用户", Toast.LENGTH_SHORT).show()
             }
-
+        }
+        //删除收藏按钮的点击事件
+        deleteCollectionButton.setOnClickListener {
+            Const.finalVideoList.remove(getVideoData())
+            kv.encode("collection_key", GsonBuilder().create().toJson(Const.finalVideoList))
+            Toast.makeText(context, "收藏已删除", Toast.LENGTH_SHORT).show()
         }
         //随机播放按钮的点击事件
         randomButton.setOnClickListener {

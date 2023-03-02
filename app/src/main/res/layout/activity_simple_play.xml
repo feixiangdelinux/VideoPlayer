@@ -10,6 +10,8 @@
 
 
     <LinearLayout
+        android:clickable="true"
+        android:focusable="true"
         android:id="@+id/fun_ll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,5 +33,12 @@
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:text="收藏" />
+
+        <Button
+            android:id="@+id/collection_delete_btn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="删除收藏" />
+
     </LinearLayout>
 </FrameLayout>

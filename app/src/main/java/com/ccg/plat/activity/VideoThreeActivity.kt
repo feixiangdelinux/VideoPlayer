@@ -27,6 +27,7 @@ import com.blankj.utilcode.util.EncryptUtils
 import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.FileUtils
 import com.ccg.plat.Const
+import com.ccg.plat.entity.DownloadUrlBean
 import com.ccg.plat.entity.RoomBean
 import com.ccg.plat.ui.theme.VideoPlayerTheme
 import com.ccg.plat.util.PermissionUtil
@@ -46,21 +47,20 @@ class VideoThreeActivity : ComponentActivity() {
     private val kv = MMKV.defaultMMKV()
     private var playNumber = 0
     private var url = ""
-    private var state = 0
     var downloadProgress = mutableStateOf(0)
     var mTaskId = 0L
     var jsonFile = ""
     var isLoading = mutableStateOf(true)
     val listName = mutableStateListOf<RoomBean>()
+    var timeStamp = 0L
+    val updateList: MutableList<DownloadUrlBean> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Aria.download(context).register()
         intent.getStringExtra("url")?.run {
             url = this
         }
-        intent.getIntExtra("state", 0).run {
-            state = this
-        }
+        timeStamp = intent.getLongExtra("timeStamp", 0L)
         playNumber = kv.decodeInt("playNumber")
         setContent {
             VideoPlayerTheme {
@@ -71,25 +71,45 @@ class VideoThreeActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * 下载json数据到手机中
+     */
+    private fun downloadJsonFile() {
+        if (FileUtils.isFileExists(jsonFile)) {
+            FileUtils.delete(jsonFile)
+        }
+        PermissionUtil.checkPermission {
+            mTaskId = Aria.download(context).load(url).setFilePath(jsonFile).create()
+        }
+    }
+
     @Composable
     fun VideoListUI(url: String) {
         LaunchedEffect(Unit) {
             jsonFile = Const.filePath + "/${EncryptUtils.encryptMD5ToString(url)}"
-            val json = kv.decodeString(url)
-            val tiaojianOne = state == 0
-            val tiaojianTwo = state == 2
-            val tiaojianThree = json.isNullOrEmpty()
-            if (tiaojianOne || tiaojianTwo || tiaojianThree) {
-                //需要重新下载
-                if (FileUtils.isFileExists(jsonFile)) {
-                    FileUtils.delete(jsonFile)
+            var json = kv.decodeString("updateList")
+            if (!json.isNullOrEmpty()) {
+                val downloasssdList = GsonBuilder().create().fromJson<MutableList<DownloadUrlBean>>(json, object : TypeToken<MutableList<DownloadUrlBean>>() {}.type)
+                updateList.addAll(downloasssdList)
+                json = ""
+                downloasssdList.clear()
+            }
+            var isDownload = true
+            val iterator = updateList.iterator()
+            while (iterator.hasNext()) {
+                val item = iterator.next()
+                if (item.url == url) {
+                    if (item.timeStamp == timeStamp) {
+                        isDownload = false
+                    }else{
+                        iterator.remove()
+                    }
                 }
-                PermissionUtil.checkPermission {
-                    mTaskId = Aria.download(context).load(url).setFilePath(jsonFile).create()
-                }
+            }
+            if (isDownload) {
+                downloadJsonFile()
             } else {
-                //加载本地缓存的数据
-                loadDataForStorage(json!!)
+                loadDataForStorage(jsonFile)
             }
         }
         if (isLoading.value) {
@@ -119,16 +139,17 @@ class VideoThreeActivity : ComponentActivity() {
                             .wrapContentHeight()
                             .clickable {
                                 if (Const.IS_VIP) {
-                                    val intent = Intent(context, SimplePlayerActivity::class.java)
+                                    val intent = Intent(context, VideoPlayerActivity::class.java)
+                                    intent.putExtra("tag", 1)
                                     intent.putExtra("index", it)
                                     startActivity(intent)
-
                                 } else {
                                     if (playNumber <= 10) {
                                         //可以正常播放
                                         playNumber += 1
                                         kv.encode("playNumber", playNumber)
-                                        val intent = Intent(context, SimplePlayerActivity::class.java)
+                                        val intent = Intent(context, VideoPlayerActivity::class.java)
+                                        intent.putExtra("tag", 1)
                                         intent.putExtra("index", it)
                                         startActivity(intent)
                                     } else {
@@ -194,12 +215,15 @@ class VideoThreeActivity : ComponentActivity() {
     /**
      * 下载结束
      * @param task DownloadTask
+     *
      */
     @Download.onTaskComplete
     fun taskComplete(task: DownloadTask) {
         downloadProgress.value = 100
         Aria.download(this).load(mTaskId).cancel(false)
-        kv.encode(url, jsonFile)
+        updateList.add(DownloadUrlBean(url = url, filePath = jsonFile, timeStamp = timeStamp))
+        kv.encode("updateList", GsonBuilder().create().toJson(updateList))
+        updateList.clear()
         loadDataForStorage(jsonFile)
     }
 
@@ -219,7 +243,6 @@ class VideoThreeActivity : ComponentActivity() {
             Const.finalVideoList.clear()
         }
         url = ""
-        state = 0
         mTaskId = 0L
         jsonFile = ""
         if (listName.isNotEmpty()) {
