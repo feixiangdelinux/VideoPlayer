@@ -14,7 +14,6 @@ import com.ccg.plat.Const
 import com.ccg.plat.R
 import com.ccg.plat.entity.RoomBean
 import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import com.shuyu.gsyvideoplayer.GSYVideoManager
 import com.shuyu.gsyvideoplayer.player.PlayerFactory
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
@@ -103,7 +102,7 @@ class SimplePlayerActivity : Activity() {
         }
     }
 
-    fun getVideoData(): RoomBean {
+    private fun getVideoData(): RoomBean {
         return playData[index]
     }
 
