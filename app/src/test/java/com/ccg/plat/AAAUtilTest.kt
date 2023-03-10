@@ -18,7 +18,13 @@ class AAAUtilTest {
 
     //    val spiderInfo = SpiderInfo(name = "se", isMerge = false, isPlay = false)
 //    val spiderInfo = SpiderInfo(name = "hbsy", isMerge = true, isPlay = true)
-    val spiderInfo = SpiderInfo(name = "acb", isMerge = false, isPlay = true)
+//    val spiderInfo = SpiderInfo(name = "acb", isMerge = false, isPlay = true)
+//    val spiderInfo = SpiderInfo(name = "aqdav", isMerge = false, isPlay = true)
+//    val spiderInfo = SpiderInfo(name = "aqdtv", isMerge = true, isPlay = true)
+//    val spiderInfo = SpiderInfo(name = "buzz", isMerge = false, isPlay = true)
+//    val spiderInfo = SpiderInfo(name = "imadou", isMerge = true, isPlay = true)
+//    val spiderInfo = SpiderInfo(name = "langyou",url = "http://9004av.com", isMerge = true, isPlay = true)
+    val spiderInfo = SpiderInfo(name = "langyoueight",url = "http://7333dy.com", isMerge = false, isPlay = false)
 
     /**
      * A完整数据并去重复/home/ccg
@@ -222,6 +228,7 @@ class AAAUtilTest {
             "E:\\新建文件夹\\index.json"
         }
         KtStringUtil.saveAsFileWriter(videoU, GsonBuilder().disableHtmlEscaping().create().toJson(RoomListBean(timeStamp = System.currentTimeMillis(), data = roomList)))
-        println("完成    ${spiderInfo.name}")
+        println("完成    ,{\"explain\":\"${spiderInfo.url}\",\"roomName\":\"电影房\",\"roomUrl\":\"https://siyou.nos-eastchina1.126.net/1/${spiderInfo.name}/index.json\",\"tag\":\"${spiderInfo.name}\"}")
+
     }
 }

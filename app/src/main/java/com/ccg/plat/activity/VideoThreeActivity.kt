@@ -10,13 +10,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -85,6 +83,7 @@ class VideoThreeActivity : ComponentActivity() {
 
     @Composable
     fun VideoListUI(url: String) {
+        var cIndex by remember { mutableStateOf(-1) }
         LaunchedEffect(Unit) {
             jsonFile = Const.filePath + "/${EncryptUtils.encryptMD5ToString(url)}"
             var json = kv.decodeString("updateList")
@@ -138,6 +137,7 @@ class VideoThreeActivity : ComponentActivity() {
                             .fillMaxWidth()
                             .wrapContentHeight()
                             .clickable {
+                                cIndex=it
                                 if (Const.IS_VIP) {
                                     val intent = Intent(context, VideoPlayerActivity::class.java)
                                     intent.putExtra("tag", 1)
@@ -166,7 +166,11 @@ class VideoThreeActivity : ComponentActivity() {
                                 .wrapContentHeight()
                                 .clip(shape = RoundedCornerShape(10)))
                             Spacer(modifier = Modifier.width(10.dp))
-                            Text(text = listName[it].name, modifier = Modifier
+                            Text(text = listName[it].name,color = if (it == cIndex) {
+                                Color.Blue
+                            } else {
+                                Color.Unspecified
+                            },  modifier = Modifier
                                 .weight(1f)
                                 .wrapContentHeight())
                             Spacer(modifier = Modifier.width(10.dp))

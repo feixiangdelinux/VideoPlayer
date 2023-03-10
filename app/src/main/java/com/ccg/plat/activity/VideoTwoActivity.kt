@@ -11,6 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ccg.plat.entity.RoomListBean
@@ -34,7 +35,6 @@ class VideoTwoActivity : ComponentActivity() {
     private val context = this
     private var url = ""
     private val retrofit = Retrofit.Builder().baseUrl("https://siyou.nos-eastchina1.126.net/").addConverterFactory(GsonConverterFactory.create()).build().create(GitHubService::class.java)
-    private val kv = MMKV.defaultMMKV()
     private var timeStamp = 0L
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +54,7 @@ class VideoTwoActivity : ComponentActivity() {
     fun VideoListUI(url: String) {
         var isLoading by remember { mutableStateOf(true) }
         val listData = remember { mutableStateListOf<RoomListBean.Data>() }
+        var cIndex by remember { mutableStateOf(-1) }
         LaunchedEffect(Unit) {
             val data = retrofit.getListData(url)
             timeStamp = data.timeStamp
@@ -74,17 +75,26 @@ class VideoTwoActivity : ComponentActivity() {
             }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                items(count = listData.size) {
+
+
+
+
+                            items(count = listData.size) {
                     Column(modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .clickable {
+                            cIndex=it
                             val intent = Intent(context, VideoThreeActivity::class.java)
                             intent.putExtra("url", listData[it].videoUrl)
                             intent.putExtra("timeStamp", timeStamp)
                             startActivity(intent)
                         }) {
-                        Text(text = listData[it].videoTag, modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 20.sp)
+                        Text(text = listData[it].videoTag,color = if (it == cIndex) {
+                            Color.Blue
+                        } else {
+                            Color.Unspecified
+                        },  modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 20.sp)
                         Divider(thickness = 1.dp)
                     }
                 }

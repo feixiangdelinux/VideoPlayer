@@ -7,14 +7,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ccg.plat.entity.RoomBean
 import com.ccg.plat.entity.RoomInfoBean
 import com.ccg.plat.repository.GitHubService
 import com.ccg.plat.ui.theme.VideoPlayerTheme
@@ -47,6 +46,7 @@ class VideoOneActivity : ComponentActivity() {
     fun VideoListUI() {
         var isLoading by remember { mutableStateOf(true) }
         val downloadUrl = remember { mutableStateListOf<RoomInfoBean>() }
+        var cIndex by remember { mutableStateOf(-1) }
         LaunchedEffect(Unit) {
             val data = retrofit.getRoomListData()
             if (data.isNotEmpty()) {
@@ -69,16 +69,21 @@ class VideoOneActivity : ComponentActivity() {
             }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                items(items = downloadUrl) {
+                items(count = downloadUrl.size) {
                     Column(modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .clickable {
+                            cIndex=it
                             val intent = Intent(context, VideoTwoActivity::class.java)
-                            intent.putExtra("url", it.roomUrl)
+                            intent.putExtra("url", downloadUrl[it].roomUrl)
                             startActivity(intent)
                         }) {
-                        Text(text = it.roomName, modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 20.sp)
+                        Text(text = downloadUrl[it].roomName, color = if (it == cIndex) {
+                            Color.Blue
+                        } else {
+                            Color.Unspecified
+                        }, modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 20.sp)
                         Divider(thickness = 1.dp)
                     }
                 }

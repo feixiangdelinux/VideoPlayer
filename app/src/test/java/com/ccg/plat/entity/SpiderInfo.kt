@@ -10,6 +10,8 @@ package com.ccg.plat.entity
 data class SpiderInfo(
     //爬虫的名称
     val name: String,
+    //网址
+    val url: String,
     //爬取下来的数据是否需要合并
     val isMerge: Boolean,
     //是否需要验证videoUrl的有效性
