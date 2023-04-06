@@ -20,6 +20,7 @@ import com.shuyu.gsyvideoplayer.player.PlayerFactory
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
 import com.tencent.mmkv.MMKV
+import timber.log.Timber
 import tv.danmaku.ijk.media.exo2.Exo2PlayerManager
 
 
@@ -39,14 +40,11 @@ class VideoPlayerActivity : Activity() {
     private lateinit var deleteCollectionButton: Button
     private lateinit var orientationUtils: OrientationUtils
     val kv = MMKV.defaultMMKV()
-
     //收藏列表数据
     var collectionData: MutableList<RoomBean> = ArrayList()
-
     //播放列表数据
     var playData: MutableList<RoomBean> = ArrayList()
     var index = 0
-
     /**
      * 0是播放视频列表
      * 1是播放收藏列表
@@ -130,6 +128,7 @@ class VideoPlayerActivity : Activity() {
             videoPlayer.setUp(getVideoData().vUrl, true, getVideoData().name)
             videoPlayer.startPlayLogic()
         }
+        videoPlayer.setOnClickListener {  }
     }
 
     private fun getVideoData(): RoomBean {

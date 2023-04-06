@@ -39,6 +39,14 @@ import com.tencent.mmkv.MMKV
  * 主要功能 :
  * 维护人员 : C4_雍和
  * date : 2022/10/17 16:26
+ *      val dataDES = "据此前报道，去年5月，芬兰和瑞典同时申请加入北约。俄罗斯总统普京去年5月就芬兰和瑞典决定申请加入北约的决定表示，俄罗斯与芬兰和瑞典之间“不存在问题”，因此芬兰和瑞典加入北约不对俄构成直接威胁，但北约军事基础设施在两国领土上的扩张必然会引起俄方回应。"
+val keyDES = "6841028304055607"
+val bytesDataDES: ByteArray = dataDES.toByteArray()
+val bytesKeyDES: ByteArray = keyDES.toByteArray()
+val str3 = EncryptUtils.encrypt3DES2HexString(bytesDataDES, bytesKeyDES, "DESede/ECB/NoPadding", null)
+Log.e("bb", str3)
+val str4 = EncryptUtils.decryptHexString3DES(str3, bytesKeyDES, "DESede/ECB/NoPadding", null)
+Log.e("bb", ConvertUtils.bytes2String(str4))
  */
 class VideoThreeActivity : ComponentActivity() {
     private val context = this

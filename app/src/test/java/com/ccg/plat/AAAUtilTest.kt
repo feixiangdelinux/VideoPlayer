@@ -1,5 +1,7 @@
 package com.ccg.plat
 
+import android.util.Log
+import com.blankj.utilcode.util.EncryptUtils
 import com.ccg.plat.entity.*
 import com.ccg.plat.util.KtStringUtil
 import com.google.gson.GsonBuilder
@@ -182,6 +184,8 @@ class AAAUtilTest {
      */
     @Test
     fun cleaningDataThree() {
+        val keyDES = "6841028304055607"
+        val bytesKeyDES: ByteArray = keyDES.toByteArray()
         //1加载json文件到内存中
         val fileStr = if (isLinux) {
             if (spiderInfo.isPlay) {
@@ -220,7 +224,7 @@ class AAAUtilTest {
             } else {
                 "E:\\新建文件夹\\$i.json"
             }
-            KtStringUtil.saveAsFileWriter(videoU, GsonBuilder().disableHtmlEscaping().create().toJson(videoList))
+            KtStringUtil.saveAsFileWriter(videoU, EncryptUtils.encrypt3DES2HexString(GsonBuilder().disableHtmlEscaping().create().toJson(videoList).toByteArray(), bytesKeyDES, "DESede/ECB/NoPadding", null))
         }
         val videoU = if (isLinux) {
             "/home/ccg/index.json"
