@@ -19,7 +19,16 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-
+-optimizationpasses 5
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-dontskipnonpubliclibraryclassmembers
+-dontpreverify
+-dontoptimize
+-verbose
+-printmapping priguardMapping.txt
+-optimizations !code/simplification/artithmetic,!field/*,!class/merging/*
+-keepattributes EnclosingMethod
 
 -keep class com.shuyu.gsyvideoplayer.video.** { *; }
 -dontwarn com.shuyu.gsyvideoplayer.video.**
