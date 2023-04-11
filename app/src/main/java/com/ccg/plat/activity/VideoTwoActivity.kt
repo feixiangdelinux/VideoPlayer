@@ -17,9 +17,6 @@ import androidx.compose.ui.unit.sp
 import com.ccg.plat.entity.RoomListBean
 import com.ccg.plat.repository.GitHubService
 import com.ccg.plat.ui.theme.VideoPlayerTheme
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
-import com.tencent.mmkv.MMKV
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -75,26 +72,24 @@ class VideoTwoActivity : ComponentActivity() {
             }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-
-
-
-
-                            items(count = listData.size) {
+                items(count = listData.size) {
                     Column(modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .clickable {
-                            cIndex=it
+                            cIndex = it
                             val intent = Intent(context, VideoThreeActivity::class.java)
                             intent.putExtra("url", listData[it].videoUrl)
                             intent.putExtra("timeStamp", timeStamp)
                             startActivity(intent)
                         }) {
-                        Text(text = listData[it].videoTag,color = if (it == cIndex) {
-                            Color.Blue
-                        } else {
-                            Color.Unspecified
-                        },  modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 20.sp)
+                        Text(
+                            text = listData[it].videoTag, color = if (it == cIndex) {
+                                Color.Blue
+                            } else {
+                                Color.Unspecified
+                            }, modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 20.sp
+                        )
                         Divider(thickness = 1.dp)
                     }
                 }

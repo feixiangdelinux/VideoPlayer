@@ -74,16 +74,18 @@ class VideoOneActivity : ComponentActivity() {
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .clickable {
-                            cIndex=it
+                            cIndex = it
                             val intent = Intent(context, VideoTwoActivity::class.java)
                             intent.putExtra("url", downloadUrl[it].roomUrl)
                             startActivity(intent)
                         }) {
-                        Text(text = downloadUrl[it].roomName, color = if (it == cIndex) {
-                            Color.Blue
-                        } else {
-                            Color.Unspecified
-                        }, modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 20.sp)
+                        Text(
+                            text = downloadUrl[it].roomName, color = if (it == cIndex) {
+                                Color.Blue
+                            } else {
+                                Color.Unspecified
+                            }, modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 20.sp
+                        )
                         Divider(thickness = 1.dp)
                     }
                 }

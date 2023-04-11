@@ -57,8 +57,11 @@ class VideoThreeActivity : ComponentActivity() {
     var mTaskId = 0L
     var jsonFile = ""
     var isLoading = mutableStateOf(true)
-    val listName = mutableStateListOf<RoomBean>()
+    val uiListData = mutableStateListOf<RoomBean>()
     var timeStamp = 0L
+    /**
+     * 这是本地缓存的所有json的目录
+     */
     val updateList: MutableList<DownloadUrlBean> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,12 +97,13 @@ class VideoThreeActivity : ComponentActivity() {
         var cIndex by remember { mutableStateOf(-1) }
         LaunchedEffect(Unit) {
             jsonFile = Const.filePath + "/${EncryptUtils.encryptMD5ToString(url)}"
+            //先判断是否缓存过数据,缓存过且没有过期就用缓存数据,否则从新下载新json数据
             var json = kv.decodeString("updateList")
             if (!json.isNullOrEmpty()) {
-                val downloasssdList = GsonBuilder().create().fromJson<MutableList<DownloadUrlBean>>(json, object : TypeToken<MutableList<DownloadUrlBean>>() {}.type)
-                updateList.addAll(downloasssdList)
+                val tempData = GsonBuilder().create().fromJson<MutableList<DownloadUrlBean>>(json, object : TypeToken<MutableList<DownloadUrlBean>>() {}.type)
+                updateList.addAll(tempData)
                 json = ""
-                downloasssdList.clear()
+                tempData.clear()
             }
             var isDownload = true
             val iterator = updateList.iterator()
@@ -108,7 +112,7 @@ class VideoThreeActivity : ComponentActivity() {
                 if (item.url == url) {
                     if (item.timeStamp == timeStamp) {
                         isDownload = false
-                    }else{
+                    } else {
                         iterator.remove()
                     }
                 }
@@ -122,30 +126,33 @@ class VideoThreeActivity : ComponentActivity() {
         if (isLoading.value) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(modifier = Modifier.wrapContentSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    LinearProgressIndicator(progress = downloadProgress.value.toFloat() / 100, modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(horizontal = 80.dp))
+                    LinearProgressIndicator(
+                        progress = downloadProgress.value.toFloat() / 100, modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(horizontal = 80.dp)
+                    )
                     Spacer(modifier = Modifier.height(10.dp))
                     Text("加载中...")
                 }
             }
-
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
                 item {
                     Text(text = "电影暂停就会显示收藏按钮,随机播放按钮\n", modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 15.sp)
                 }
-                items(count = listName.size) {
-                    Column(modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()) {
+                items(count = uiListData.size) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                    ) {
                         Spacer(modifier = Modifier.height(5.dp))
                         Row(modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight()
                             .clickable {
-                                cIndex=it
+                                cIndex = it
                                 if (Const.IS_VIP) {
                                     val intent = Intent(context, VideoPlayerActivity::class.java)
                                     intent.putExtra("tag", 1)
@@ -169,18 +176,22 @@ class VideoThreeActivity : ComponentActivity() {
                                 }
                             }, verticalAlignment = Alignment.CenterVertically) {
                             Spacer(modifier = Modifier.width(10.dp))
-                            AsyncImage(model = listName[it].pUrl, contentDescription = null, modifier = Modifier
-                                .width(120.dp)
-                                .wrapContentHeight()
-                                .clip(shape = RoundedCornerShape(10)))
+                            AsyncImage(
+                                model = uiListData[it].pUrl, contentDescription = null, modifier = Modifier
+                                    .width(120.dp)
+                                    .wrapContentHeight()
+                                    .clip(shape = RoundedCornerShape(10))
+                            )
                             Spacer(modifier = Modifier.width(10.dp))
-                            Text(text = listName[it].name,color = if (it == cIndex) {
-                                Color.Blue
-                            } else {
-                                Color.Unspecified
-                            },  modifier = Modifier
-                                .weight(1f)
-                                .wrapContentHeight())
+                            Text(
+                                text = uiListData[it].name, color = if (it == cIndex) {
+                                    Color.Blue
+                                } else {
+                                    Color.Unspecified
+                                }, modifier = Modifier
+                                    .weight(1f)
+                                    .wrapContentHeight()
+                            )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
                         Spacer(modifier = Modifier.height(5.dp))
@@ -202,10 +213,10 @@ class VideoThreeActivity : ComponentActivity() {
         Const.finalVideoList = GsonBuilder().create().fromJson<MutableList<RoomBean>>(json, object : TypeToken<MutableList<RoomBean>>() {}.type)
         json = ""
         if (Const.finalVideoList.isNotEmpty()) {
-            if (listName.isNotEmpty()) {
-                listName.clear()
+            if (uiListData.isNotEmpty()) {
+                uiListData.clear()
             }
-            listName.addAll(Const.finalVideoList)
+            uiListData.addAll(Const.finalVideoList)
             isLoading.value = false
         } else {
             isLoading.value = true
@@ -257,8 +268,8 @@ class VideoThreeActivity : ComponentActivity() {
         url = ""
         mTaskId = 0L
         jsonFile = ""
-        if (listName.isNotEmpty()) {
-            listName.clear()
+        if (uiListData.isNotEmpty()) {
+            uiListData.clear()
         }
         Aria.download(this).load(mTaskId).cancel(true)
         Aria.download(context).unRegister()
