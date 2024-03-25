@@ -17,15 +17,13 @@ import org.junit.Test
 class AAAUtilTest {
     val isLinux = false
 
-    //    val spiderInfo = SpiderInfo(name = "se", isMerge = false, isPlay = false)
-//    val spiderInfo = SpiderInfo(name = "hbsy", isMerge = true, isPlay = true)
-//    val spiderInfo = SpiderInfo(name = "acb", isMerge = false, isPlay = true)
+    val spiderInfo = SpiderInfo(name = "acb", url = "https://www.dhsb4.com/Enter/home.html",isMerge = false, isPlay = true)
 //    val spiderInfo = SpiderInfo(name = "aqdav", isMerge = false, isPlay = true)
 //    val spiderInfo = SpiderInfo(name = "aqdtv", isMerge = true, isPlay = true)
 //    val spiderInfo = SpiderInfo(name = "buzz", isMerge = false, isPlay = true)
 //    val spiderInfo = SpiderInfo(name = "imadou", isMerge = true, isPlay = true)
 //    val spiderInfo = SpiderInfo(name = "langyou",url = "http://9004av.com", isMerge = true, isPlay = true)
-    val spiderInfo = SpiderInfo(name = "acb", url = "https://www.225sk.com/index/home.html", isMerge = false, isPlay = true)
+//    val spiderInfo = SpiderInfo(name = "acb", url = "https://www.225sk.com/index/home.html", isMerge = false, isPlay = true)
 
     /**
      * A完整数据并去重复/home/ccg
@@ -37,7 +35,7 @@ class AAAUtilTest {
         val fileStr = if (isLinux) {
             KtStringUtil.getStrInFile("/home/ccg/${spiderInfo.name}.json")
         } else {
-            KtStringUtil.getStrInFile("E:\\${spiderInfo.name}.json")
+            KtStringUtil.getStrInFile("D:\\${spiderInfo.name}.json")
         }
         //2把json转换成list
         val listDatas = GsonBuilder().disableHtmlEscaping().create().fromJson<ArrayList<VideoBean>>(fileStr, object : TypeToken<ArrayList<VideoBean>>() {}.type)
@@ -104,7 +102,7 @@ class AAAUtilTest {
             if (isLinux) {
                 KtStringUtil.saveAsFileWriter("/home/ccg/" + spiderInfo.name + "1.json", GsonBuilder().disableHtmlEscaping().create().toJson(list))
             } else {
-                KtStringUtil.saveAsFileWriter("E:\\" + spiderInfo.name + "1.json", GsonBuilder().disableHtmlEscaping().create().toJson(list))
+                KtStringUtil.saveAsFileWriter("D:\\" + spiderInfo.name + "1.json", GsonBuilder().disableHtmlEscaping().create().toJson(list))
             }
             val endTime = System.currentTimeMillis()
             println("耗时：  " + (endTime - startTime) / 1000 / 60 + " 分钟")
@@ -123,7 +121,7 @@ class AAAUtilTest {
             if (isLinux) {
                 KtStringUtil.saveAsFileWriter("/home/ccg/" + spiderInfo.name + "1.json", GsonBuilder().disableHtmlEscaping().create().toJson(listOne))
             } else {
-                KtStringUtil.saveAsFileWriter("E:\\" + spiderInfo.name + "1.json", GsonBuilder().disableHtmlEscaping().create().toJson(listOne))
+                KtStringUtil.saveAsFileWriter("D:\\" + spiderInfo.name + "1.json", GsonBuilder().disableHtmlEscaping().create().toJson(listOne))
             }
             val endTime = System.currentTimeMillis()
             println("耗时：  " + (endTime - startTime) / 1000 / 60 + " 分钟")
@@ -140,12 +138,12 @@ class AAAUtilTest {
             val fileStr = if (isLinux) {
                 KtStringUtil.getStrInFile("/home/ccg/" + spiderInfo.name + "1.json")
             } else {
-                KtStringUtil.getStrInFile("E:\\" + spiderInfo.name + "1.json")
+                KtStringUtil.getStrInFile("D:\\" + spiderInfo.name + "1.json")
             }
             val fileStrTwo = if (isLinux) {
                 KtStringUtil.getStrInFile("/home/ccg/" + spiderInfo.name + "Text.json")
             } else {
-                KtStringUtil.getStrInFile("E:\\" + spiderInfo.name + "Text.json")
+                KtStringUtil.getStrInFile("D:\\" + spiderInfo.name + "Text.json")
 
             }
             //2把json转换成list
@@ -172,7 +170,7 @@ class AAAUtilTest {
             if (isLinux) {
                 KtStringUtil.saveAsFileWriter("/home/ccg/" + spiderInfo.name + "ok.json", GsonBuilder().disableHtmlEscaping().create().toJson(listDatasOne))
             } else {
-                KtStringUtil.saveAsFileWriter("E:\\" + spiderInfo.name + "ok.json", GsonBuilder().disableHtmlEscaping().create().toJson(listDatasOne))
+                KtStringUtil.saveAsFileWriter("D:\\" + spiderInfo.name + "ok.json", GsonBuilder().disableHtmlEscaping().create().toJson(listDatasOne))
             }
         }
     }
@@ -183,9 +181,6 @@ class AAAUtilTest {
      */
     @Test
     fun cleaningDataThree() {
-        val keyDES = "684102830405560768410283"
-        val bytesKeyDES: ByteArray = keyDES.toByteArray()
-        println(bytesKeyDES.size)
         //1加载json文件到内存中
         val fileStr = if (isLinux) {
             if (spiderInfo.isPlay) {
@@ -195,9 +190,9 @@ class AAAUtilTest {
             }
         } else {
             if (spiderInfo.isPlay) {
-                KtStringUtil.getStrInFile("E:\\" + spiderInfo.name + "ok.json")
+                KtStringUtil.getStrInFile("D:\\" + spiderInfo.name + "ok.json")
             } else {
-                KtStringUtil.getStrInFile("E:\\" + spiderInfo.name + "1.json")
+                KtStringUtil.getStrInFile("D:\\" + spiderInfo.name + "1.json")
             }
         }
         val listDatasOne = GsonBuilder().disableHtmlEscaping().create().fromJson<ArrayList<VideoBean>>(fileStr, object : TypeToken<ArrayList<VideoBean>>() {}.type)
@@ -210,26 +205,26 @@ class AAAUtilTest {
             }
         }
         for (i in videoTag.indices) {
-            roomList.add(RoomListBean.Data(videoTag =  EncryptUtils.encrypt3DES2HexString(videoTag[i].toByteArray(), bytesKeyDES, "DESede/ECB/pkcs5padding", null), videoUrl =    EncryptUtils.encrypt3DES2HexString("https://siyou.nos-eastchina1.126.net/2/${spiderInfo.name}/$i.json".toByteArray(), bytesKeyDES, "DESede/ECB/pkcs5padding", null)))
+            roomList.add(RoomListBean.Data(videoTag =  videoTag[i], videoUrl =  "https://siyou.nos-eastchina1.126.net/2/${spiderInfo.name}/$i.json"))
             if (videoList.isNotEmpty()) {
                 videoList.clear()
             }
             for (j in listDatasOne) {
                 if (videoTag[i] == j.tags) {
-                    videoList.add(RoomBean(name = EncryptUtils.encrypt3DES2HexString(j.name.toByteArray(), bytesKeyDES, "DESede/ECB/pkcs5padding", null), pUrl = EncryptUtils.encrypt3DES2HexString(j.getpUrl().toByteArray(), bytesKeyDES, "DESede/ECB/pkcs5padding", null), tag = EncryptUtils.encrypt3DES2HexString(j.tags.toByteArray(), bytesKeyDES, "DESede/ECB/pkcs5padding", null), vUrl = EncryptUtils.encrypt3DES2HexString(j.getvUrl().toByteArray(), bytesKeyDES, "DESede/ECB/pkcs5padding", null)))
+                    videoList.add(RoomBean(name = j.name, pUrl =j.getpUrl(), tag =j.tags, vUrl = j.getvUrl()))
                 }
             }
             val videoU = if (isLinux) {
                 "/home/ccg/$i.json"
             } else {
-                "E:\\新建文件夹\\$i.json"
+                "D:\\新建文件夹\\$i.json"
             }
             KtStringUtil.saveAsFileWriter(videoU, GsonBuilder().disableHtmlEscaping().create().toJson(videoList))
         }
         val videoU = if (isLinux) {
             "/home/ccg/index.json"
         } else {
-            "E:\\新建文件夹\\index.json"
+            "D:\\新建文件夹\\index.json"
         }
         KtStringUtil.saveAsFileWriter(videoU, GsonBuilder().disableHtmlEscaping().create().toJson(RoomListBean(timeStamp = System.currentTimeMillis(), data = roomList)))
         println("完成    ,{\"explain\":\"${spiderInfo.url}\",\"roomName\":\"电影房\",\"roomUrl\":\"https://siyou.nos-eastchina1.126.net/2/${spiderInfo.name}/index.json\",\"tag\":\"${spiderInfo.name}\"}")
