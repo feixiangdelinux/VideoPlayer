@@ -6,11 +6,31 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Divider
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,20 +38,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.arialyy.annotations.Download
-import com.arialyy.aria.core.Aria
-import com.arialyy.aria.core.task.DownloadTask
 import com.blankj.utilcode.util.EncryptUtils
 import com.blankj.utilcode.util.FileIOUtils
-import com.blankj.utilcode.util.FileUtils
 import com.ccg.plat.Const
 import com.ccg.plat.entity.DownloadUrlBean
 import com.ccg.plat.entity.RoomBean
+import com.ccg.plat.repository.GitHubService
 import com.ccg.plat.ui.theme.VideoPlayerTheme
-import com.ccg.plat.util.PermissionUtil
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.tencent.mmkv.MMKV
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import timber.log.Timber
 
 /**
  * @author : C4_雍和
@@ -39,14 +58,6 @@ import com.tencent.mmkv.MMKV
  * 主要功能 :
  * 维护人员 : C4_雍和
  * date : 2022/10/17 16:26
- *      val dataDES = "据此前报道，去年5月，芬兰和瑞典同时申请加入北约。俄罗斯总统普京去年5月就芬兰和瑞典决定申请加入北约的决定表示，俄罗斯与芬兰和瑞典之间“不存在问题”，因此芬兰和瑞典加入北约不对俄构成直接威胁，但北约军事基础设施在两国领土上的扩张必然会引起俄方回应。"
-val keyDES = "6841028304055607"
-val bytesDataDES: ByteArray = dataDES.toByteArray()
-val bytesKeyDES: ByteArray = keyDES.toByteArray()
-val str3 = EncryptUtils.encrypt3DES2HexString(bytesDataDES, bytesKeyDES, "DESede/ECB/NoPadding", null)
-Log.e("bb", str3)
-val str4 = EncryptUtils.decryptHexString3DES(str3, bytesKeyDES, "DESede/ECB/NoPadding", null)
-Log.e("bb", ConvertUtils.bytes2String(str4))
  */
 class VideoThreeActivity : ComponentActivity() {
     private val context = this
@@ -59,13 +70,14 @@ class VideoThreeActivity : ComponentActivity() {
     var isLoading = mutableStateOf(true)
     val uiListData = mutableStateListOf<RoomBean>()
     var timeStamp = 0L
+    private val retrofit = Retrofit.Builder().baseUrl("http://101.42.171.191:8083/GameServer/houtai/").addConverterFactory(GsonConverterFactory.create()).build().create(GitHubService::class.java)
+
     /**
      * 这是本地缓存的所有json的目录
      */
     val updateList: MutableList<DownloadUrlBean> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Aria.download(context).register()
         intent.getStringExtra("url")?.run {
             url = this
         }
@@ -77,18 +89,6 @@ class VideoThreeActivity : ComponentActivity() {
                     VideoListUI(url)
                 }
             }
-        }
-    }
-
-    /**
-     * 下载json数据到手机中
-     */
-    private fun downloadJsonFile() {
-        if (FileUtils.isFileExists(jsonFile)) {
-            FileUtils.delete(jsonFile)
-        }
-        PermissionUtil.checkPermission {
-            mTaskId = Aria.download(context).load(url).setFilePath(jsonFile).create()
         }
     }
 
@@ -118,20 +118,38 @@ class VideoThreeActivity : ComponentActivity() {
                 }
             }
             if (isDownload) {
-                downloadJsonFile()
+                Timber.e("AA1:  下载完成")
+                val roomList = retrofit.getVideoFinalData(url)
+                FileIOUtils.writeFileFromString(jsonFile, GsonBuilder().create().toJson(roomList))
+                downloadProgress.value = 100
+                updateList.add(DownloadUrlBean(url = url, filePath = jsonFile, timeStamp = timeStamp))
+                kv.encode("updateList", GsonBuilder().create().toJson(updateList))
+                updateList.clear()
+                if (Const.finalVideoList.isNotEmpty()) {
+                    Const.finalVideoList.clear()
+                }
+                Const.finalVideoList = roomList
+                if (Const.finalVideoList.isNotEmpty()) {
+                    if (uiListData.isNotEmpty()) {
+                        uiListData.clear()
+                    }
+                    uiListData.addAll(Const.finalVideoList)
+                    isLoading.value = false
+                } else {
+                    isLoading.value = true
+                }
             } else {
+                Timber.e("AA1:  用缓存")
                 loadDataForStorage(jsonFile)
             }
         }
         if (isLoading.value) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(modifier = Modifier.wrapContentSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    LinearProgressIndicator(
-                        progress = downloadProgress.value.toFloat() / 100, modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(horizontal = 80.dp)
-                    )
+                    LinearProgressIndicator(progress = downloadProgress.value.toFloat() / 100, modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(horizontal = 80.dp))
                     Spacer(modifier = Modifier.height(10.dp))
                     Text("加载中...")
                 }
@@ -142,11 +160,9 @@ class VideoThreeActivity : ComponentActivity() {
                     Text(text = "电影暂停就会显示收藏按钮,随机播放按钮\n", modifier = Modifier.padding(start = 20.dp, top = 15.dp, bottom = 15.dp), fontSize = 15.sp)
                 }
                 items(count = uiListData.size) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                    ) {
+                    Column(modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()) {
                         Spacer(modifier = Modifier.height(5.dp))
                         Row(modifier = Modifier
                             .fillMaxWidth()
@@ -176,22 +192,18 @@ class VideoThreeActivity : ComponentActivity() {
                                 }
                             }, verticalAlignment = Alignment.CenterVertically) {
                             Spacer(modifier = Modifier.width(10.dp))
-                            AsyncImage(
-                                model = uiListData[it].pUrl, contentDescription = null, modifier = Modifier
-                                    .width(120.dp)
-                                    .wrapContentHeight()
-                                    .clip(shape = RoundedCornerShape(10))
-                            )
+                            AsyncImage(model = uiListData[it].pUrl, contentDescription = null, modifier = Modifier
+                                .width(120.dp)
+                                .wrapContentHeight()
+                                .clip(shape = RoundedCornerShape(10)))
                             Spacer(modifier = Modifier.width(10.dp))
-                            Text(
-                                text = uiListData[it].name, color = if (it == cIndex) {
-                                    Color.Blue
-                                } else {
-                                    Color.Unspecified
-                                }, modifier = Modifier
-                                    .weight(1f)
-                                    .wrapContentHeight()
-                            )
+                            Text(text = uiListData[it].name, color = if (it == cIndex) {
+                                Color.Blue
+                            } else {
+                                Color.Unspecified
+                            }, modifier = Modifier
+                                .weight(1f)
+                                .wrapContentHeight())
                             Spacer(modifier = Modifier.width(10.dp))
                         }
                         Spacer(modifier = Modifier.height(5.dp))
@@ -223,43 +235,6 @@ class VideoThreeActivity : ComponentActivity() {
         }
     }
 
-    /**
-     * 下载中
-     * @param task DownloadTask
-     */
-    @Download.onTaskRunning
-    fun running(task: DownloadTask) {
-        val len = task.fileSize
-        if (len != 0L) {
-            downloadProgress.value = task.percent
-        }
-    }
-
-    /**
-     * 下载结束
-     * @param task DownloadTask
-     *
-     */
-    @Download.onTaskComplete
-    fun taskComplete(task: DownloadTask) {
-        downloadProgress.value = 100
-        Aria.download(this).load(mTaskId).cancel(false)
-        updateList.add(DownloadUrlBean(url = url, filePath = jsonFile, timeStamp = timeStamp))
-        kv.encode("updateList", GsonBuilder().create().toJson(updateList))
-        updateList.clear()
-        loadDataForStorage(jsonFile)
-    }
-
-    @Download.onTaskFail
-    fun taskFail(task: DownloadTask?) {
-        if (FileUtils.isFileExists(jsonFile)) {
-            FileUtils.delete(jsonFile)
-        }
-        jsonFile = jsonFile.substring(0, jsonFile.length - 1)
-        mTaskId = Aria.download(context).load(url).setFilePath(jsonFile).create()
-    }
-
-
     override fun onDestroy() {
         super.onDestroy()
         if (Const.finalVideoList.isNotEmpty()) {
@@ -271,8 +246,6 @@ class VideoThreeActivity : ComponentActivity() {
         if (uiListData.isNotEmpty()) {
             uiListData.clear()
         }
-        Aria.download(this).load(mTaskId).cancel(true)
-        Aria.download(context).unRegister()
     }
 }
 

@@ -205,7 +205,7 @@ class AAAUtilTest {
             }
         }
         for (i in videoTag.indices) {
-            roomList.add(RoomListBean.Data(videoTag =  videoTag[i], videoUrl =  "https://siyou.nos-eastchina1.126.net/2/${spiderInfo.name}/$i.json"))
+            roomList.add(RoomListBean.Data(videoTag =  videoTag[i], videoUrl =  "http://101.42.171.191:8083/GameServer/houtai/1/${spiderInfo.name}/$i.json"))
             if (videoList.isNotEmpty()) {
                 videoList.clear()
             }
@@ -227,6 +227,6 @@ class AAAUtilTest {
             "D:\\新建文件夹\\index.json"
         }
         KtStringUtil.saveAsFileWriter(videoU, GsonBuilder().disableHtmlEscaping().create().toJson(RoomListBean(timeStamp = System.currentTimeMillis(), data = roomList)))
-        println("完成    ,{\"explain\":\"${spiderInfo.url}\",\"roomName\":\"电影房\",\"roomUrl\":\"https://siyou.nos-eastchina1.126.net/2/${spiderInfo.name}/index.json\",\"tag\":\"${spiderInfo.name}\"}")
+        println("完成    ,{\"explain\":\"${spiderInfo.url}\",\"roomName\":\"电影房\",\"roomUrl\":\"http://101.42.171.191:8083/GameServer/houtai/1/${spiderInfo.name}/index.json\",\"tag\":\"${spiderInfo.name}\"}")
     }
 }

@@ -12,8 +12,8 @@ android {
         applicationId "com.ccg.plat"
         minSdk 24
         targetSdk 33
-        versionCode 6
-        versionName "1.5"
+        versionCode 8
+        versionName "1.8"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -57,7 +57,7 @@ android {
 }
 
 dependencies {
-    def composeBom = platform('androidx.compose:compose-bom:2023.01.00')
+    def composeBom = platform('androidx.compose:compose-bom:2023.03.00')
     implementation composeBom
     androidTestImplementation composeBom
     implementation 'androidx.core:core-ktx:1.9.0'
@@ -73,8 +73,9 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.github.getActivity:XXPermissions:18.65'
+    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
     implementation 'com.jakewharton.timber:timber:5.0.1'
     implementation 'com.blankj:utilcodex:1.31.1'
     implementation 'io.coil-kt:coil-compose:2.3.0'
@@ -85,6 +86,4 @@ dependencies {
     implementation 'com.tencent:mmkv:1.2.14'
     implementation 'cn.jpush.api:jpush-client:3.6.6'
     implementation 'cn.jpush.api:jiguang-common:1.2.2'
-    implementation 'com.arialyy.aria:core:3.8.5'
-    kapt 'com.arialyy.aria:compiler:3.8.5'
 }

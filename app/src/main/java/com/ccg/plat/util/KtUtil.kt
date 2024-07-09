@@ -1,11 +1,8 @@
 package com.ccg.plat.util
 
-import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import com.blankj.utilcode.util.PermissionUtils
-import com.blankj.utilcode.util.ToastUtils
 
 /**
  * @author : C4_雍和

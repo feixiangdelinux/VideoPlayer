@@ -41,7 +41,7 @@ class AdminActivity : ComponentActivity() {
     val errMsg: MutableLiveData<String> = MutableLiveData()
     var registrationId = ""
     var currentBillData = ArrayList<BillBean>()
-    private val retrofit = Retrofit.Builder().baseUrl("https://siyou.nos-eastchina1.126.net/").addConverterFactory(GsonConverterFactory.create()).build().create(GitHubService::class.java)
+    private val retrofit = Retrofit.Builder().baseUrl("http://101.42.171.191:8083/GameServer/houtai/").addConverterFactory(GsonConverterFactory.create()).build().create(GitHubService::class.java)
     var isVip = false
 
     override fun onCreate(savedInstanceState: Bundle?) {

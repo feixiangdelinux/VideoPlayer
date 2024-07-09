@@ -12,13 +12,13 @@ import retrofit2.http.Url
  * date : 2022/10/17 11:56
  */
 interface GitHubService {
-    @GET("/1/update.json")
+    @GET("1/update.json")
     suspend fun getUpdataInfo(): UpdateBean
 
-    @GET("/1/roomlist.json")
+    @GET("1/roomlist.json")
     suspend fun getRoomListData(): MutableList<RoomInfoBean>
 
-    @GET("/1/agentinfo.json")
+    @GET("1/agentinfo.json")
     suspend fun getAgentInfo(): MutableList<String>
 
     @GET
