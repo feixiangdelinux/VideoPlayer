@@ -1,7 +1,11 @@
 package com.ccg.plat
 
-import com.blankj.utilcode.util.EncryptUtils
-import com.ccg.plat.entity.*
+import com.blankj.utilcode.util.FileUtils
+import com.ccg.plat.entity.RoomBean
+import com.ccg.plat.entity.RoomListBean
+import com.ccg.plat.entity.SpiderInfo
+import com.ccg.plat.entity.VideoBean
+import com.ccg.plat.entity.VideoInfo
 import com.ccg.plat.util.KtStringUtil
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -16,14 +20,20 @@ import org.junit.Test
  */
 class AAAUtilTest {
     val isLinux = false
+//    val prefixUrl = "https://siyou.nos-eastchina1.126.net"
+    val prefixUrl = "http://117.72.114.24:8083/GameServer/houtai"
 
-    val spiderInfo = SpiderInfo(name = "acb", url = "https://www.dhsb4.com/Enter/home.html",isMerge = false, isPlay = true)
-//    val spiderInfo = SpiderInfo(name = "aqdav", isMerge = false, isPlay = true)
-//    val spiderInfo = SpiderInfo(name = "aqdtv", isMerge = true, isPlay = true)
-//    val spiderInfo = SpiderInfo(name = "buzz", isMerge = false, isPlay = true)
+    //    val spiderInfo = SpiderInfo(name = "acb", url = "https://www.b93642.com/Enter/home.html", isMerge = false, isPlay = true)
+//    val spiderInfo = SpiderInfo(name = "aicespade", url = "https://www.fulizxc18.xyz/", isMerge = true, isPlay = true)
+//    val spiderInfo = SpiderInfo(name = "aqdav", url = "https://ugzaawjque.sbs/", isMerge = false, isPlay = true)
+//    val spiderInfo = SpiderInfo(name = "aqdtv", url = "https://vrgora.jpds7.bond/cn/home/web/index.php", isMerge = true, isPlay = true)
+//    val spiderInfo = SpiderInfo(name = "buzz", url = "https://ddi.avnyg4.makeup/cn/home/web/", isMerge = true, isPlay = true)
+//    val spiderInfo = SpiderInfo(name = "ck", url = "https://mice-dig-deep.sexav2qqq222.xyz/ssss", isMerge = true, isPlay = true)
+    val spiderInfo = SpiderInfo(name = "hsex", url = "https://qxe.lkhsp9.hair/cn/home/web/", isMerge = true, isPlay = true)
 //    val spiderInfo = SpiderInfo(name = "imadou", isMerge = true, isPlay = true)
-//    val spiderInfo = SpiderInfo(name = "langyou",url = "http://9004av.com", isMerge = true, isPlay = true)
+//    val spiderInfo = SpiderInfo(name = "langyou", url = "http://9004av.com", isMerge = true, isPlay = true)
 //    val spiderInfo = SpiderInfo(name = "acb", url = "https://www.225sk.com/index/home.html", isMerge = false, isPlay = true)
+
 
     /**
      * A完整数据并去重复/home/ccg
@@ -128,6 +138,28 @@ class AAAUtilTest {
         }
     }
 
+    @Test
+    fun cleaningDatasdfsdTwo() {
+        val fileStr = KtStringUtil.getStrInFile("D:\\aqdtvText.json")
+        val listDatasTwo = GsonBuilder().disableHtmlEscaping().create().fromJson<List<VideoInfo>>(fileStr, object : TypeToken<List<VideoInfo>>() {}.type)
+        val setOne = LinkedHashSet<String>()
+        listDatasTwo.forEach {
+            val dfas = if (it.getvUrl().contains("http://")) {
+                it.getvUrl().replace("http://", "")
+            } else if (it.getvUrl().contains("https://")) {
+                it.getvUrl().replace("https://", "")
+            } else {
+                it.getvUrl()
+            }
+            setOne.add(dfas)
+        }
+        setOne.forEach {
+            println(it)
+        }
+
+
+    }
+
     /**
      * B1把不能播放的数据删除并把最终结果保存到本地
      */
@@ -184,13 +216,13 @@ class AAAUtilTest {
         //1加载json文件到内存中
         val fileStr = if (isLinux) {
             if (spiderInfo.isPlay) {
-                KtStringUtil.getStrInFile("/home/ccg/" + spiderInfo.name + "ok.json")
+                KtStringUtil.getStrInFile("/home/ccg/" + spiderInfo.name + ".json")
             } else {
                 KtStringUtil.getStrInFile("/home/ccg/" + spiderInfo.name + "1.json")
             }
         } else {
             if (spiderInfo.isPlay) {
-                KtStringUtil.getStrInFile("D:\\" + spiderInfo.name + "ok.json")
+                KtStringUtil.getStrInFile("D:\\" + spiderInfo.name + ".json")
             } else {
                 KtStringUtil.getStrInFile("D:\\" + spiderInfo.name + "1.json")
             }
@@ -205,13 +237,13 @@ class AAAUtilTest {
             }
         }
         for (i in videoTag.indices) {
-            roomList.add(RoomListBean.Data(videoTag =  videoTag[i], videoUrl =  "http://101.42.171.191:8083/GameServer/houtai/1/${spiderInfo.name}/$i.json"))
+            roomList.add(RoomListBean.Data(videoTag = videoTag[i], videoUrl = "${prefixUrl}/1/${spiderInfo.name}/$i.json"))
             if (videoList.isNotEmpty()) {
                 videoList.clear()
             }
             for (j in listDatasOne) {
                 if (videoTag[i] == j.tags) {
-                    videoList.add(RoomBean(name = j.name, pUrl =j.getpUrl(), tag =j.tags, vUrl = j.getvUrl()))
+                    videoList.add(RoomBean(name = j.name, pUrl = j.getpUrl(), tag = j.tags, vUrl = j.getvUrl()))
                 }
             }
             val videoU = if (isLinux) {
@@ -220,6 +252,7 @@ class AAAUtilTest {
                 "D:\\新建文件夹\\$i.json"
             }
             KtStringUtil.saveAsFileWriter(videoU, GsonBuilder().disableHtmlEscaping().create().toJson(videoList))
+            generateHtml(fileName = videoTag[i], videoList = videoList)
         }
         val videoU = if (isLinux) {
             "/home/ccg/index.json"
@@ -227,6 +260,64 @@ class AAAUtilTest {
             "D:\\新建文件夹\\index.json"
         }
         KtStringUtil.saveAsFileWriter(videoU, GsonBuilder().disableHtmlEscaping().create().toJson(RoomListBean(timeStamp = System.currentTimeMillis(), data = roomList)))
-        println("完成    ,{\"explain\":\"${spiderInfo.url}\",\"roomName\":\"电影房\",\"roomUrl\":\"http://101.42.171.191:8083/GameServer/houtai/1/${spiderInfo.name}/index.json\",\"tag\":\"${spiderInfo.name}\"}")
+
+        generateHtmlTwo(roomList = roomList)
+        println("完成    ,{\"explain\":\"${spiderInfo.url}\",\"roomName\":\"电影房\",\"roomUrl\":\"${prefixUrl}/1/${spiderInfo.name}/index.json\",\"tag\":\"${spiderInfo.name}\"}")
+        println("完成    <li onclick=\"window.location.href='${spiderInfo.name}/index.html'\">\n" + "\t\t\t\t<p>电影1房</p>\n" + "\t\t\t</li>")
+
+    }
+
+    private fun generateHtmlTwo(roomList: MutableList<RoomListBean.Data>) {
+        val ssss = "D:\\新建文件夹\\${spiderInfo.name}\\index.html"
+        var aaaaa = "<!DOCTYPE html>\n" + "<html>\n" + "\t<head>\n" + "\t\t<meta charset=\"UTF-8\">\n" + "\t\t<title>视频列表页</title>\n" + "\t</head>\n" + "\t<body>\n" + "\t\t<ul>"
+        roomList.forEach {
+            aaaaa += "\t\t\t<li onclick=\"window.location.href='${it.videoTag}.html'\">\n" + "\t\t\t\t<p>${it.videoTag}</p>\n" + "\t\t\t</li>"
+
+        }
+        aaaaa += "\t\t</ul>\n" + "\t</body>\n" + "</html>"
+        KtStringUtil.saveAsFileWriter(ssss, aaaaa)
+    }
+
+    private fun generateHtml(fileName: String, videoList: MutableList<RoomBean>) {
+        //创建文件
+        FileUtils.createOrExistsDir("D:\\新建文件夹")
+        FileUtils.createOrExistsDir("D:\\新建文件夹\\${spiderInfo.name}")
+        val ssss = "D:\\新建文件夹\\${spiderInfo.name}\\${fileName}.html"
+        var aaaaa = "<!DOCTYPE html>\n" + "<html>\n" + "\t<head>\n" + "\t\t<meta charset=\"UTF-8\">\n" + "\t\t<title>视频列表页</title>\n" + "\t</head>\n" + "\t<body>\n" + "\t\t<ul>"
+        videoList.forEach {
+            if (it.vUrl.endsWith("mp4") || it.vUrl.endsWith("MP4")) {
+                aaaaa += "\t\t\t<li onclick=\"window.location.href='../video/mp4.html?param1=${it.vUrl}'\">\n" + "\t\t\t\t<img src=\"${it.pUrl}\" />\n" + "\t\t\t\t<p>${it.name}</p>\n" + "\t\t\t</li>"
+            } else if (it.vUrl.endsWith("m3u8") || it.vUrl.endsWith("M3U8")) {
+                aaaaa += "\t\t\t<li onclick=\"window.location.href='../video/m3u8.html?param1=${it.vUrl}'\">\n" + "\t\t\t\t<img src=\"${it.pUrl}\" />\n" + "\t\t\t\t<p>${it.name}</p>\n" + "\t\t\t</li>"
+            }
+        }
+        aaaaa += "\t\t</ul>\n" + "\t</body>\n" + "</html>"
+        KtStringUtil.saveAsFileWriter(ssss, aaaaa)
+    }
+
+    /**
+     * A完整数据并去重复/home/ccg
+     */
+    @Test
+    fun cleaningDataThdddree() {
+        val startTime = System.currentTimeMillis()
+        //1加载json文件到内存中
+        val fileStr = if (isLinux) {
+            KtStringUtil.getStrInFile("/home/ccg/aqdavok.json")
+        } else {
+            KtStringUtil.getStrInFile("D:\\aqdavok.json")
+        }
+        //2把json转换成list
+        val listDatas = GsonBuilder().disableHtmlEscaping().create().fromJson<ArrayList<VideoBean>>(fileStr, object : TypeToken<ArrayList<VideoBean>>() {}.type)
+        println("原始数据一共: " + listDatas.size)
+
+
+//        if (isLinux) {
+//            KtStringUtil.saveAsFileWriter("/home/ccg/" + spiderInfo.name + "1.json", GsonBuilder().disableHtmlEscaping().create().toJson(listOne))
+//        } else {
+//            KtStringUtil.saveAsFileWriter("D:\\" + spiderInfo.name + "1.json", GsonBuilder().disableHtmlEscaping().create().toJson(listOne))
+//        }
+        val endTime = System.currentTimeMillis()
+        println("耗时：  " + (endTime - startTime) / 1000 / 60 + " 分钟")
     }
 }

@@ -100,15 +100,7 @@
                 <action android:name="cn.jiguang.user.service.action" />
             </intent-filter>
         </service>
-        <receiver
-            android:name=".MyReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE" />
-                <category android:name="com.ccg.plat" />
-            </intent-filter>
-        </receiver>
+
     </application>
 
 </manifest>

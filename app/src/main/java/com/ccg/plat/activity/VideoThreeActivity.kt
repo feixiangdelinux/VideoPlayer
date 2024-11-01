@@ -70,7 +70,7 @@ class VideoThreeActivity : ComponentActivity() {
     var isLoading = mutableStateOf(true)
     val uiListData = mutableStateListOf<RoomBean>()
     var timeStamp = 0L
-    private val retrofit = Retrofit.Builder().baseUrl("http://101.42.171.191:8083/GameServer/houtai/").addConverterFactory(GsonConverterFactory.create()).build().create(GitHubService::class.java)
+    private val retrofit = Retrofit.Builder().baseUrl(Const.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(GitHubService::class.java)
 
     /**
      * 这是本地缓存的所有json的目录

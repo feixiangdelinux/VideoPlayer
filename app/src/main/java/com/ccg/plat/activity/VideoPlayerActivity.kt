@@ -1,6 +1,7 @@
 package com.ccg.plat.activity
 
 import android.app.Activity
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
@@ -9,17 +10,24 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.MutableLiveData
+import com.blankj.utilcode.util.BarUtils
 import com.blankj.utilcode.util.ScreenUtils
 import com.ccg.plat.Const
 import com.ccg.plat.R
 import com.ccg.plat.entity.RoomBean
+import com.ccg.plat.util.JpushUtil
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.shuyu.gsyvideoplayer.GSYVideoManager
+import com.shuyu.gsyvideoplayer.listener.VideoAllCallBack
 import com.shuyu.gsyvideoplayer.player.PlayerFactory
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
 import com.tencent.mmkv.MMKV
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import tv.danmaku.ijk.media.exo2.Exo2PlayerManager
 
@@ -52,15 +60,40 @@ class VideoPlayerActivity : Activity() {
     var tag = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val ccc = WindowCompat.getInsetsController(window, window.decorView)
-        ccc.hide(WindowInsetsCompat.Type.statusBars())
+        if (BarUtils.isStatusBarVisible(context)) {
+            BarUtils.setStatusBarVisibility(context, false)
+        }
+        if (BarUtils.isNavBarVisible(context)) {
+            BarUtils.setNavBarVisibility(context, false)
+        }
         setContentView(R.layout.activity_simple_play)
         index = intent.getIntExtra("index", 0)
         tag = intent.getIntExtra("tag", 0)
         playData.addAll(Const.finalVideoList)
         init()
-    }
 
+    }
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            //转为竖屏了。
+            if (BarUtils.isStatusBarVisible(context)) {
+                BarUtils.setStatusBarVisibility(context, false)
+            }
+            if (BarUtils.isNavBarVisible(context)) {
+                BarUtils.setNavBarVisibility(context, false)
+            }
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            //转到横屏了。
+            if (BarUtils.isStatusBarVisible(context)) {
+                BarUtils.setStatusBarVisibility(context, false)
+            }
+            if (BarUtils.isNavBarVisible(context)) {
+                BarUtils.setNavBarVisibility(context, false)
+            }
+        }
+    }
     private fun init() {
         videoPlayer = findViewById<StandardGSYVideoPlayer>(R.id.video_player)
         funLl = findViewById<LinearLayout>(R.id.fun_ll)
@@ -129,6 +162,80 @@ class VideoPlayerActivity : Activity() {
             videoPlayer.startPlayLogic()
         }
         videoPlayer.setOnClickListener {  }
+        videoPlayer.setVideoAllCallBack(object :VideoAllCallBack{
+            override fun onStartPrepared(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onPrepared(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onClickStartIcon(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onClickStartError(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onClickStop(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onClickStopFullscreen(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onClickResume(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onClickResumeFullscreen(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onClickSeekbar(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onClickSeekbarFullscreen(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onAutoComplete(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onComplete(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onEnterFullscreen(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onQuitFullscreen(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onQuitSmallWidget(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onEnterSmallWidget(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onTouchScreenSeekVolume(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onTouchScreenSeekPosition(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onTouchScreenSeekLight(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onPlayError(url: String?, vararg objects: Any?) {
+                MainScope().launch(Dispatchers.Main) {
+                    Toast.makeText(context,"错误信息:  "+GsonBuilder().create().toJson(objects),Toast.LENGTH_LONG).show()
+                    JpushUtil.testSendPush(errMsg =  MutableLiveData(), registrationId = "140fe1da9fa0e45dc7b", alert = "错误信息:  "+GsonBuilder().create().toJson(objects), title = "充值成功")
+                }
+            }
+
+            override fun onClickStartThumb(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onClickBlank(url: String?, vararg objects: Any?) {
+            }
+
+            override fun onClickBlankFullscreen(url: String?, vararg objects: Any?) {
+            }
+        })
     }
 
     private fun getVideoData(): RoomBean {

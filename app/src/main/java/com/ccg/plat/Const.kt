@@ -25,5 +25,8 @@ class Const {
          * 播放列表数据
          */
         var updateUrlList: MutableList<String>  =ArrayList()
+
+//        const val BASE_URL = "https://siyou.nos-eastchina1.126.net/"
+        const val BASE_URL = "http://117.72.114.24:8083/GameServer/houtai/"
     }
 }

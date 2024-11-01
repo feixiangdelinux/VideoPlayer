@@ -34,8 +34,7 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 class SplashActivity : ComponentActivity() {
     val context = this
-    private val retrofit = Retrofit.Builder().baseUrl("http://101.42.171.191:8083/GameServer/houtai/").addConverterFactory(GsonConverterFactory.create()).build().create(GitHubService::class.java)
-//    private val retrofit = Retrofit.Builder().baseUrl("https://siyou.nos-eastchina1.126.net/").addConverterFactory(GsonConverterFactory.create()).build().create(GitHubService::class.java)
+    private val retrofit = Retrofit.Builder().baseUrl(Const.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build().create(GitHubService::class.java)
     var title = mutableStateOf("1第一次进入如果出更新弹窗那就需要更新app,要么点立即更新去更新app,要么去群里下载最新的app\n\n" + "2软件安装需要两个权限读写权限和安装app的权限,只有都同意才能安装最新的app\n\n" + "3如果遇到问题加QQ群 463208733\n\n")
     var mTaskId = 0L
     var downloadProgress = mutableStateOf(0)
